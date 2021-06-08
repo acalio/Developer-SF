@@ -1,0 +1,228 @@
+ #+TITLE:     Concetti di Programmazione in Java
+#+AUTHOR: 
+#+EMAIL:     
+#+DATE:      
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+LANGUAGE:  it
+#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+
+#+startup: beamer nolatexpreview
+#+LaTeX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [12pt, presentation, aspectratio=169]
+#+LATEX_HEADER:\beamertemplatenavigationsymbolsempty
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \usepackage[margin=0.15in]{geometry}
+
+#+LATEX_HEADER: \newcommand{\figures}{./img}
+#+LATEX_HEADER:\DeclareMathOperator*{\argmax}{\arg\!\max}
+#+LATEX_HEADER: \author[A. Caliò]{Antonio Caliò}
+#+BEAMER_HEADER:\institute{Cooperativa Servizi & Formazione\\Catanzaro (CZ)}
+#+BEAMER_HEADER: \AtBeginSection[]{\begin{frame}<beamer>\frametitle{Presentat‌​‌​ion agenda}\tableofcontents[currentsection]\end{frame}}
+
+#+BEAMER_FRAME_LEVEL: 2
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) n%10BEAMER_extra(Extra)
+
+ #+latex_header: \addtobeamertemplate{navigation symbols}{}{\usebeamerfont{footline}   \usebeamercolor[fg]{footline}\hspace{1em} \insertframenumber/\inserttotalframenumber}
+
+
+ # #+latex_header:\setbeamertemplate{footline}{ \hbox{  \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.7ex,dp=1ex,center]{author in head/foot}	\insertshortauthor  \end{beamercolorbox} \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.6ex,dp=1ex,center]{author in head/foot}	{\usebeamercolor[fg]{footline} Corso Developer 2020/2021}  \end{beamercolorbox}  \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.6ex,dp=1ex,rightskip=.15cm,right]{author in head/foot}    \usebeamerfont{section in foot} \insertframenumber/\inserttotalframenumber  \end{beamercolorbox}}  \vskip0pt}
+
+#+latex_header: \usepackage{algorithm,algorithmic}
+#+latex_header: \usepackage{amsmath,amssymb,amsfonts}
+#+latex_header: \usepackage{listings}
+#+latex_header: \lstset{basicstyle=\scriptsize\ttfamily}
+
+
+*  Value vs  Reference
+
+
+** Concetti Chiave
+***                                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+- Chiamata vs Chiamante
+  - La funzione da cui parte la chiamata è detta: *Chiamante* (Caller) 
+  - L'altra funzione richiamata è detta: *Chiamata* (Callee)
+- Actual vs Formal Parameters
+  - *Actual Parameters*:  valori concretamente passati in input
+    durante la chiamata
+  - *Formal Parameters*: valori richiesti nella definizione della
+    funzione
+
+***                                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+#+ATTR_LATEX: :scale .4
+[[file:img/function.png]]
+
+
+** Passaggio per Valore
+*** Left                                                            :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+  - Si esegue una copia dei parametri passati in input
+    - La funziona chiamante e quella chiamata hanno due set di variabili
+      indipendenti aventi lo stesso valore
+    - Le modifiche a tali variabili eseguite dalla funzione *chiamata* non sono visibili
+       dalla funzione *chiamante*
+*** Right                                                           :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.3]{\figures/value.png}
+\end{figure}
+#+end_export
+
+** Passaggio per Riferimento (o per Indirizzo)
+*** Left                                                            :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+  - Il chiamante passa il riferimento i.e., indirizzo di memoria
+    - Se all'interno della funzione *chiamata* si eseguono delle
+      modifiche agli /actual parameters/ passati in input:
+      - Le modifiche saranno visibili anche dall'esterno della
+        funzione *chiamata*
+*** Right                                                           :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.3]{\figures/ref.png}
+\end{figure}
+#+end_export
+
+** Cosa succede in Java?
+- *In Java i parametri sono sempre passati per valore!*
+- Tuttavia dobbiamo fare attenzione quando lavoriamo con gli oggetti:
+  - Se un metodo richiede in input un oggetto (quindi un tipo non
+    primitivo):
+    - Java eseguirà una copia del *riferimento* a quel determinato oggetto
+  - Concretamente, gli oggetti sono passati per riferimento
+
+** Cosa succede in Java?
+[[file:img/javaob.png]]
+
+** Quiz
+\scriptsize
+#+begin_src java  :results output :exports both
+public class App {
+	public static void main(String... doYourBest) {
+    	    Simpson simpson = new Simpson();
+    	    transformIntoHomer(simpson);
+    	    System.out.println(simpson.name);
+	}
+	static void transformIntoHomer(Simpson simpson) {
+    	    simpson.name = "Homer";
+	}
+}
+class Simpson {
+	String name;
+}
+#+end_src
+#+RESULTS:
+
+** Quiz
+\scriptsize
+#+begin_src java
+public class PrimitiveByValueExample {
+
+	public static void main(String... primitiveByValue) {
+    	    int homerAge = 30;
+    	    changeHomerAge(homerAge);
+    	    System.out.println(homerAge);
+	}
+
+	static void changeHomerAge(int homerAge) {
+    	    homerAge = 35;
+	}
+}
+#+end_src
+
+** Oggetti Immutabili
+
+***                                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+
+- Oggetti  contrassegnati come *final*
+- Una volta inizializzati, il loro valore non può essere modificato
+  - Mantengono lo stesso valore per tutta l'esecuzione del programma
+- Java ha molte classi immutabili:
+  - Integer, Double, Float, Long, Boolean, BigDecimal, String
+
+***                                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+\scriptsize
+#+begin_src  java
+public class StringValueChange {
+	public static void main(String[] args) {
+    	    String name = "";
+    	    changeToHomer(name);
+    	    System.out.println(name);
+	}
+
+	static void changeToHomer(String name) {
+    	    name = "Homer";
+	}
+}
+#+end_src
+
+** Test
+\scriptsize
+
+***                                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+#+begin_src  java
+     public class DragonWarriorReferenceChallenger {
+       public static void main(String... doYourBest) {
+         StringBuilder wProf =
+             new StringBuilder("Dragon ");
+         String wWeap = "Sword ";
+         changeWarriorClass(wProf, wWeap);
+         System.out.println("Warrior=" +wProf +
+                            " Weapon=" + wWeap);
+       }
+       static void changeWarriorClass(StringBuilder prof,
+                                      String weap) {
+         prof.append("Knight");
+         weap = "Dragon " + weap;
+
+         weap = null;
+         prof = null;
+       }
+     }
+#+end_src
+
+***                                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+1. Warrior=null Weapon=null
+2. Warrior=Dragon Weapon=Dragon
+3. Warrior=Dragon Knight Weapon=Dragon Sword
+4.  Warrior=Dragon Knight Weapon=Sword
+
+
+
+
+* Fine
+** Fine
