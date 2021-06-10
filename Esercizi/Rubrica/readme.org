@@ -1,0 +1,10 @@
+#+options: h:1 num:nil toc:nil
+* Traccia
+Si vuole implementare un'applicazione che permetta di memorizzare una
+rubrica telefonica.
+
+Nello specifico, occorre implementare tre classi:
+- ~NumeroTelefonico~: per memorizzare le informazioni relative ad un
+  particolare numero di telefono
+- ~Contatto~: memorizza le informazioni di contatto
+- ~Rubrica~:  memorizza una collezione di contatti
