@@ -15,15 +15,16 @@
 
 #+startup: beamer nolatexpreview
 #+LaTeX_CLASS: beamer
-#+LATEX_CLASS_OPTIONS: [12pt, presentation, aspectratio=169]
+#+LATEX_CLASS_OPTIONS: [10pt, presentation, aspectratio=169]
 #+LATEX_HEADER:\beamertemplatenavigationsymbolsempty
 #+LATEX_HEADER: \RequirePackage{fancyvrb}
-#+LATEX_HEADER: \usepackage[margin=0.15in]{geometry}
+#+LATEX_HEADER: \geometry{text margin left=0.15in, text margin right=0.15in}
+
 
 #+LATEX_HEADER: \newcommand{\figures}{./img}
 #+LATEX_HEADER:\DeclareMathOperator*{\argmax}{\arg\!\max}
 #+LATEX_HEADER: \author[A. Caliò]{Antonio Caliò}
-#+BEAMER_HEADER:\institute{Cooperativa Servizi & Formazione\\Catanzaro (CZ)}
+#+BEAMER_HEADER:\institute{Cooperativa Servizi \& Formazione\\Catanzaro (CZ)}
 #+BEAMER_HEADER: \AtBeginSection[]{\begin{frame}<beamer>\frametitle{Presentat‌​‌​ion agenda}\tableofcontents[currentsection]\end{frame}}
 
 #+BEAMER_FRAME_LEVEL: 2
@@ -222,7 +223,368 @@ public class StringValueChange {
 4.  Warrior=Dragon Knight Weapon=Sword
 
 
+* Ereditarietà, dynamic binding, polimorfismo
 
 
-* Fine
-** Fine
+** Nozioni Preliminari
+- Progettare una nuova classe per estensione di una classe esistente,
+ dunque per differenza.
+  - permette di concentrarsi sulle novità introdotte dalla
+    nuova classe
+  - favorisce produttività del programmatore
+
+
+
+
+** Una Classe ContoBancario: Specifiche
+- Di seguito si considera una classe ContoBancario che definisce le
+  usuali operazioni di deposito e prelievo
+- Un conto è identificato da un numero espresso mediante una String, e si caratterizza per il suo bilancio
+- Non è permesso al bilancio di andare “in rosso”
+  - ossia un prelevamento oltre il valore del bilancio non viene consentito
+    - A questo scopo il metodo preleva() ritorna un valore boolean che
+      è true se l’operazione si conclude con successo, false altrimenti
+- Metodi  accessori permettono di conoscere il numero di conto e il
+  valore corrente del bilancio.
+
+
+** Una classe ContoBancario: Implementazione
+\scriptsize
+#+begin_src java  :results output :exports both
+import java.io.*;
+public class ContoBancario{
+  private String numero;
+  private double bilancio=0;
+  public ContoBancario( String numero ){...}//primo costruttore
+  public ContoBancario( String numero, double bilancio){..{}//secondo costruttore
+
+public void deposita( double quanto ){ ..}
+
+public boolean preleva( double quanto ) { .. }
+
+public double saldo(){ return bilancio;}
+public String conto(){ return numero; }
+public String toString(){
+   return String.format( "conto=%s bilancio=E %1.2f", numero, bilancio );
+  }//toString
+}//ContoBancario
+
+#+end_src
+#+RESULTS:
+
+** Un Secondo Conto Bancario, con Fido: Specifiche
+
+- ContoBancario va bene per i clienti “ordinari"
+- La banca dispone di un altro tipo di conto _ContoConFido_ riservato a clientela selezionata
+  - ammette l’andata in rosso controllata da un fido. 
+- ContoConFido mantiene molte caratteristiche di ContoBancario ma in
+  più introduce delle differenze:
+  - Il bilancio può andare in rosso
+** Un Secondo Conto Bancario, con Fido: Implementazione
+\scriptsize
+#+begin_src  java
+import java.io.*;
+public class ContoConFido extends ContoBancario {
+  private double fido=1000; //default
+  public ContoConFido( String numero ) { super( numero );}
+  public ContoConFido( String numero, double bilancio ){super( numero, bilancio ); }
+  public ContoConFido( String numero, double bilancio, doublé fido ){
+    super( numero, bilancio ); 
+    this.fido=fido;
+  }
+  public boolean preleva( doublé quanto ){ super.preleva(quanto)... }
+  public double fido(){ ...}
+public void nuovoFido( double fido ){...}
+public String toString(){ ... }
+
+}//ContoConFido
+#+end_src
+
+** Il Pronome Super
+- Serve a riferirsi alla super classe
+  - ad esempio per invocare esplicitamente un costruttore della super classe
+    - si delega parte del processo di costruzione.
+    - se è usato per questi scopi, super,  deve essere la prima
+      istruzione del costruttore.
+- Si noti che:
+  - essendo private il campo bilancio di ContoBancario: ogni sua
+   modifica va ottenuta mediante i metodi di ContoBancario
+
+** Modifiche alla classe ContoConFido
+- Modificare la classe ContoConFido di modo che:
+  - Si tenga traccia dell'ammontare scoperto da parte del correntista
+
+*** Esempio                                                :B_exampleblock:
+:PROPERTIES:
+:BEAMER_env: exampleblock
+:END:
+- Il correntista possiede 100$ e cerca di prelevare 200$:
+  - L'ammontare scoperto è pari a 100$
+
+
+** Relazione di ereditarietà
+:PROPERTIES:
+:BEAMER_opt: t
+:END:
+\scriptsize
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+****                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+- ContoConFido è-un (is-a) ContoBancario, ma un pò più specializzato.
+- ContoConFido è una sottoclasse (o classe derivata)
+- ContoBancario una super-classe (o classe base).
+- La relazione di ereditarietà da ContoConFido a ContoBancario è una relazione di generalizzazione
+- La relazione di ereditarietà è ben definita se un oggetto della
+  classe derivata può sempre sostituire un oggetto della classe base
+  - *principio di sostituibilità dei tipi*
+- *Tuttavia: un conto bancario non è un conto con fido!!!!*
+
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+- La parentela ci permette di scrivere:
+\tiny
+#+begin_src  java
+
+ContoBancario cb=new ContoBancario(...);
+ContoConFido ce=new ContoConFido(...);
+cb=ce; //assegnazione dal particolare al generale OK
+
+#+end_src
+
+
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.5]{\figures/ere.png}
+\end{figure}
+#+end_export
+
+** Assegnazione tra oggetti come proiezione
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.4]{\figures/pro.png}
+\end{figure}
+#+end_export
+\scriptsize
+- L’assegnazione da particolare a generale corrisponde, ad es., alla proiezione di un punto dello spazio
+cartesiano (con coordinate x, y e z) sul piano X-Y (la coordinata z è
+ignorata). 
+- Nella situazione effettiva di Java, a seguito dell’assegnazione   =cb=ce=, =cb= punta all’oggetto composito riferito da =ce=
+- Tuttavia, =cb= lo vede con gli “occhiali” imposti dalla sua classe di appartenenza ContoBancario.
+- Pertanto i campi fido e scoperto, anche se effettivamente presenti nell’oggetto puntato da =cb=, sono ignorati.
+
+** Tipo statico e dinamico di un oggetto
+\scriptsize
+#+begin_src  java
+
+ContoBancario cb=new ContoBancario(...);
+ContoConFido ce=new ContoConFido(...);
+cb=ce; //assegnazione dal particolare al generale OK
+
+#+end_src
+\vskip -.5cm
+\small
+- Dopo l'assegnazione =cb=ce=, ogni uso di =preleva()= si riferisce alla sotto classe
+  - =cb= ha tipo statico (legato cioè alla dichiarazione) =ContoBancario=
+  - =cb= ha tipo dinamico (guadagnato in seguito all'assegnazione)
+   =ContoConFido=
+- Il tipo statico dice cosa si può fare su =cb=
+- Il tipo dinamico dice quale particolare metodo va in esecuzione:
+  - se uno della super classe o uno della sotto classe.
+- Prima dell’assegnazione, =cb.preleva(...)=  si riferisce al metodo della super classe.
+- Dopo l’assegnazione, =cb.preleva(...)= invoca di fatto la versione
+  di preleva di =ContoConFido=.
+
+**  Assegnazione dal generale al particolare ?
+\scriptsize
+- Non si può assegnare un oggetto da generale al particolare,
+  es. =ce=cb=
+  - =cb= non ha campi e valori corrispondenti ai campi particolari
+    introdotti dalla classe conto con fido
+  - non ha senso proiettare un punto dal piano cartesiano X-Y nello spazio, dal momento che non è definita la coordinata z
+
+- Tuttavia, se cb ha tipo dinamico =ContoConFido=, si può di fatto
+  cambiare punto di vista ("paio di occhiali”) su =cb= in modo da
+  vederlo come =ContoConFido= e quindi accedere a tutte le
+  funzionalità di =ContoConFido=
+  #+begin_src  java
+
+    if( cb instanceof ContoConFido )(
+    ce=(ContoConFido)cb; //casting
+    ce.nuovoFido(5000);
+    }
+#+end_src
+
+
+- Su una variabile =cb= di classe (tipo statico) =ContoBancario=
+  possono essere richieste sempre e solo le funzionalità della classe cui appartiene
+- Se =cb= ha tipo dinamico =ContoConFido=, invocando un metodo ridefinito in =ContoConFido= come preleva/deposita, di fatto si esegue la versione del metodo di =ContoConFido=
+- Se =cb= ha tipo dinamico =ContoConFido=, controllabile con
+  =instanceof= è allora possibile cambiare il punto di vista su =cb= (/casting/)
+
+** Dynamic binding e polimorfismo
+
+- Il dynamic binding (collegamento dinamico) si riferisce alla proprietà che invocando un metodo su un oggetto
+  come =cb=, dinamicamente possa essere eseguita la versione del metodo
+ definita in:  =ContoBancario= oppure =ContoConFido=
+- Il termine polimorfismo significa "più forme” ed esprime la
+  proprietà che un oggetto possa appartenere a più tipi
+  - con =cb=ce=, l’oggetto =cb= acquisisce un altro tipo (diventa polimorfo)
+  -  Il polimorfismo di cb si può verificare come segue
+#+begin_src  java
+if(cb instanceof ContoBancario ) è TRUE
+if(cb instanceof ContoConFido ) è TRUE
+#+end_src
+
+- dynamic binding e polimorfismo sono le due facce di una stessa
+  medaglia:
+  - Il polimorfismo è la causa del dynamic binding
+
+** Ereditarietà e ridefinizione dei metodi
+ - =ContoConFido= ridefinisce i metodi =deposita= e =preleva= già
+   presenti nella =super=  classe =ContoBancario=
+   - occorre normalmente rispettare la sua intestazione (signature)
+   - se cambia qualcosa nell’intestazione (nome del metodo, tipi dei
+     parametri):    /overloading/ anziché di ridefinizione (/overriding/).
+ - Perchè funzioni correttamente il dynamic binding/polimorfismo, è necessario osservare l’esatta intestazione
+#+begin_src  java
+@Override // ANNOTAZIONE FACOLTATIVA!!!!
+public boolean preleva( doublé quanto ){...}  
+#+end_src
+- L'annotazione permette al compilatore di controllare ed
+  eventualmente segnalare problemi
+
+** Ereditarietà singola
+- In Java ogni classe può essere erede di una sola classe (ereditarietà singola).
+- Tutto ciò permette la costruzione di gerarchie di classi secondo una struttura ad albero
+  - Ogni classe ha solo un genitore
+- Avere una gerarchia accresce la possibilità di polimorfismo
+
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+**** Esempio                                               :B_block:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:BEAMER_env: block
+:END:
+\scriptsize
+- Oggetti di classe E sono anche di classe: B, A
+- Ad una variabile di  classe A è possibile assegnare un oggetto di
+  qualsiasi sottoclasse: B, C, D, E, F
+- Il tipo dinamico di un oggetti di classe A può essere uno qualsiasi
+  delle sottoclassi 
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.4]{\figures/tree.png}
+\end{figure}
+#+end_export
+
+** Ereditarietà vs composizione
+- Riflessione sulla relazione di ereditarietà alla luce del principio
+  di sostituibilità dei tipi
+
+
+*** Esempio                                                       :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+  - Un oggetto =Linea= (segmento) è caratterizzato da due punti
+    (oggetti di classe =Punto=)
+  - *È corretto definire =Linea= come sottoclasse di =Punto=?*
+\pause
+  - No! Rappresenta una forzatura.
+  - Una =Linea= non è un =Punto=, ma è /composta/ (has-a) da punti
+  - Pertanto la cosa migliore è definire la classe =Linea= come segue:
+ #+begin_src  java
+class Linea {
+  Punto p1, p2;
+}  
+#+end_src
+
+** L'antenato Object
+- In Java, ogni classe eredita direttamente o indirettamente da =Object= (radice di tutte le gerarchie di classi)
+- Quando una classe non specifica la clausola extends, in realtà
+  ammette implicitamente la clausola: =extends Object=
+- I metodi seguenti ammettono già un’implementazione in =Object= che necessariamente è generica. Essi vanno
+di norma ridefiniti per avere un significato “tagliato su misura” delle nuove classi:
+• =String toString()= - ritorna lo stato di =this= sotto forma di stringa
+- =boolean equals( Object x )=  ritorna true se this ed x sono uguali
+  - =Object= definisce l’uguaglianza in modo superficiale: due oggetti
+    sono uguali se sono in aliasing, ossia condividono lo stesso riferimento
+- =int hashCode()= - ritorna un hash code (numero intero unico) per =this=
+
+** Strutture Dati Eterogenee
+
+- Grazie alla ereditarietà implicita da =Object= possiamo dichiarare
+  strutture dati eterogenee come segue:
+#+begin_src  java
+Object[] v = new Object[10];
+#+end_src
+- in =v= possiamo memorizzare oggetti appartenenti a qualsiasi classe
+- per scoprire il tipo di un oggetto contenuto in =v= possiamo scrivere
+#+begin_src  java
+if(v[i] isinstanceof String)   ...
+#+end_src
+
+** Recap: modificatori di accesso
+
+\scriptsize
+- Gli attributi di una classe (campi o metodi) possono avere un modificatore tra
+  - =public= se sono esportati a tutti i possibili client
+  - =private= se rimangono ad uso esclusivo della classe
+  - =protected= se sono esportati solo alle classi eredi
+  - (nulla) se devono essere accessibili all’interno dello stesso package (familiarità o amicizia tra classi).
+
+- Attenzione: gli attributi =protected= sono accessibili anche nell’ambito del package di appartenenza.
+- Una classe può essere =public= se è esportata per l’uso in altri
+  file, non avere il modificatore =public= se il suo uso è ristretto al =package= (eventualmente anonimo) di appartenenza.
+- Una classe può essere =final= se non può essere più estesa da classi
+  eredi.
+  - similmente, un metodo =final= non può essere più ridefinito nelle sottoclassi
+- In una ridefinizione di metodo è possibile ampliare il suo
+  modificatore ma non restringerlo
+- Ad es. nella super classe il metodo potrebbe essere =protected= e
+  nella sotto classe =public=, ma non viceversa. 
+
+** Esercizi
+\scriptsize
+*** ContoBancario                                                 :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- Si implementi la gerarchia di classi =ContoBancario=
+- Si implementi una classe =BancaArray= che contenga al suo interno
+  una collezione di conti bancari (possono essere di tipo
+  =ContoBancario= oppure =ContoConFido=)
+
+
+*** Contatore                                                     :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+- Si consideri una classe =Contatore= che fornisce l'astrazione di un contatore, ossia una variabile intera che può
+essere incrementata/decrementata. 
+- La classe dispone di tre costruttori:
+\scriptsize
+  1. quello di default che inizializza a zero il contatore
+  2. quello normale che imposta il valore iniziale del contatore con il valore di un parametro
+  3. quello di copia che imposta il contatore dal valore di un altro
+     contatore. Per semplicità il campo valore è dichiarato protected (esportato cioè alle classi eredi).
+
+
+
+
