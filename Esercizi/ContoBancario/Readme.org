@@ -5,11 +5,18 @@ informazioni relative a conti bancari.
 Nello specifico si vuole implementare una gerarchia di classi:
 - ~ContoBancario~: per memorizzare le informazioni relative ad un
   conto bancario semplice
-- ~ContoBancario~: per memorizzare le informazioni relative ad un
+- ~ContoConFido~: per memorizzare le informazioni relative ad un
   conto bancario con fido. In particolare si vuole tenere traccia di
   quando un utente va in rosso e soprattutto dell'ammontare della
   cifra.
 
+** Interfaccia ContoBancario
+- boolean preleva(double)
+- void deposita(double)
 
+  
+** Interfaccia ContoConFido
+- preleva/deposita (overriding)
+- void aumentaFido(double) 
 
 
