@@ -1,13 +1,14 @@
 class ContoBancario {
 
-	private String iban;
-	private double bilancio;
+	protected String iban;
+	protected double bilancio;
+	protected Cliente proprietario;
 
-	public ContoBancario(String iban, double bilancio) {
+	public ContoBancario(String iban, double bilancio, Cliente prop) {
 		this.iban = iban;
 		this.bilancio = bilancio;
+		this.proprietario = prop;
 	}
-
 
 	public String getIban() {
 		return iban;
@@ -23,6 +24,14 @@ class ContoBancario {
 
 	public void setBilancio(double bilancio) {
 		this.bilancio = bilancio;
+	}
+
+	public Cliente getProprietario() {
+		return proprietario;
+	}
+
+	public void setProprietario(Cliente proprietario) {
+		this.proprietario = proprietario;
 	}
 
 	public boolean preleva(double somma) {
@@ -49,8 +58,8 @@ class ContoConFido extends ContoBancario {
 	private double fido;
 	private double rosso;
 
-	public ContoConFido(String iban, double bilancio, double fido) {
-		super(iban, bilancio);
+	public ContoConFido(String iban, double bilancio, Cliente prop, double fido) {
+		super(iban, bilancio, prop);
 	}
 
 	public double getFido() {
@@ -70,7 +79,6 @@ class ContoConFido extends ContoBancario {
 	}
 
 	public boolean preleva(double somma) {
-		double bilancio = getBilancio();
 		if (somma > bilancio + (fido - rosso))
 			return false;
 
@@ -84,7 +92,7 @@ class ContoConFido extends ContoBancario {
 			rosso -= somma; // diminuisco il debito
 		if (rosso < 0) {
 			rosso = 0;
-			setBilancio(-rosso);
+			bilancio = -rosso;
 		}
 
 	}
