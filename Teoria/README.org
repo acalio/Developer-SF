@@ -583,7 +583,17 @@ essere incrementata/decrementata.
   1. quello di default che inizializza a zero il contatore
   2. quello normale che imposta il valore iniziale del contatore con il valore di un parametro
   3. quello di copia che imposta il contatore dal valore di un altro
-     contatore. Per semplicità il campo valore è dichiarato protected (esportato cioè alle classi eredi).
+     contatore. Per semplicità il campo valore è dichiarato protected
+     (esportato cioè alle classi eredi).
+
+- Si implementi una seconda classe =ContatoreModulare= che erediti
+
+     - Un contatore con modulo 10 è un contatore che assume tutti i
+       valori da 0-9. Una volta raggiunto il valore 9, ritorna
+       nuovamente a 0. 
+
+
+  
 
 
 
