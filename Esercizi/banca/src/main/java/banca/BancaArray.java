@@ -66,6 +66,7 @@ class BancaArray {
 	}
 
 	public void aprireConto(Cliente c, TipoConto tc) {
+		//controllo se il cliente è gia presente nel sistema
 		int posCliente = Utility.cerca(this.clients, c); 
 		if (posCliente == -1) {
 			// cliente non presente
@@ -100,7 +101,7 @@ class BancaArray {
 	public void chiudiConto(String codiceIban) throws ContoNonTrovato {
 		int pos = cercaConto(codiceIban);
         //rimuovo il conto
-        accounts[pos] = null;
+        accounts[pos] = null; // accounts = [c1, c2, null, c3, c4]
         Utility.shift(this.accounts, pos);
 	}
 
@@ -133,7 +134,7 @@ class BancaArray {
             //cambio in conto con fido
             accounts[pos] = new ContoConFido(cb.getIban(),cb.getBilancio(),cb.getProprietario(),0);
 
-        }else if(cb instanceof ContoConFido && nuovoTipo==TipoConto.CONTO_SEMPLICE) {
+        } else if(cb instanceof ContoConFido && nuovoTipo==TipoConto.CONTO_SEMPLICE) {
             ContoConFido cf = (ContoConFido) cb; 
             if(cf.getRosso()>0)
                 throw new ConversioneException(codiceIban);
@@ -151,7 +152,7 @@ class BancaArray {
 
 	@Override
 	public String toString() {
-		StringBuffer bf = new StringBuffer();
+		StringBuilder bf = new StringBuilder();
 		bf.append("Banca: "+ name);
 		bf.append("Indirizzo: "+address);
 		bf.append("Conti\n=============\n\t");

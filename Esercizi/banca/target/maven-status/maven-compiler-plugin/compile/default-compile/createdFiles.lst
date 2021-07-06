@@ -1,0 +1,10 @@
+banca/exceptions/ContoNonTrovato.class
+banca/BancaArray.class
+banca/ContoConFido.class
+banca/ContoBancario.class
+banca/App.class
+banca/BancaArray$TipoConto.class
+banca/BancaArray$1.class
+banca/Cliente.class
+banca/exceptions/ConversioneException.class
+banca/Utility.class
