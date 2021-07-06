@@ -1,3 +1,5 @@
+package banca;
+
 class Cliente {
 
 	private String code; // la banca assenga il codice
@@ -90,6 +92,17 @@ class Cliente {
 
 	public void setBirthDate(String birthDate) {
 		this.birthDate = birthDate;
+	}
+
+	
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("code: " + code);
+		sb.append("Nome: " + name);
+		sb.append("Cognome: " + lastName);
+		return "Cliente [code=" + code + " Nome="+name+ " Cognome="+lastName+"]";
 	}
 
 	@Override

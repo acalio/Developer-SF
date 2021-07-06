@@ -1,3 +1,4 @@
+package banca;
 class ContoBancario {
 
 	protected String iban;
@@ -88,18 +89,18 @@ class ContoConFido extends ContoBancario {
 	}
 
 	public void deposita(double somma) {
-		if (rosso > 0)
-			rosso -= somma; // diminuisco il debito
-		if (rosso < 0) {
+		if(rosso>0)
+			rosso -= somma;
+		if(rosso<0){
+			somma += rosso;
 			rosso = 0;
-			bilancio = -rosso;
 		}
-
+		super.deposita(somma);
 	}
 
 	@Override
 	public String toString() {
-		return "ContoConFido [fido=" + fido + " rosso=" + rosso + "]";
+		return "ContoConFido [iban="+iban+"bilancio="+bilancio+"fido=" + fido + " rosso=" + rosso + "]";
 	}
 
 }
