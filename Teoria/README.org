@@ -590,11 +590,253 @@ essere incrementata/decrementata.
 
      - Un contatore con modulo 10 è un contatore che assume tutti i
        valori da 0-9. Una volta raggiunto il valore 9, ritorna
-       nuovamente a 0. 
+       nuovamente a 0.
+
 
 
   
 
 
+* Classi Astratte e Interfaccia
+
+** Una gerarchia di classi per figure geometriche piane
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.7
+:END:
+- Si considerano le comuni figure piane:
+  - cerchio, quadrato, rombo, trapezio ...
+- Si vuole organizzare le figure in modo da facilitarne l’utilizzo nelle applicazioni
+  - tutte posseggono almeno una dimensione,
+    - il raggio per il cerchio
+    - il lato per il quadrato o il rombo
+    - la base e l'altezza per un rettangolo
+- Per “imparentare" le figure si può concepire una classe base
+ =Figura= che poi ogni figura particolare può estendere e specializzare
+  - in Figura si può introdurre una dimensione (double) e i metodi che
+    certamente hanno senso su tutte le figure.
+
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.3
+:END:
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.4]{\figures/figuraGer.png}
+\end{figure}
+#+end_export
 
 
+** Discussione
+- Identificare una gerarchia di classi come quella di cui si sta
+  discutendo ha una cruciale importanza
+  - Si può introdurre nella classe base (=Figura=) tutti quegli
+    elementi (attributi e metodi) comuni a qualunque erede.
+    - In questo modo si evitano ridondanze e si garantisce ad ogni
+      classe derivata di possedere i “connotati" di appartenenza ad una stessa “famiglia".
+
+- Si rifletta ora che prevedendo una dimensione (cioè un lato) nella
+ classe =Figura=,  il suo concreto significato non è chiaro
+  - per un cerchio si tratterà del suo raggio
+  - per un quadrato del suo lato
+  - per un rettangolo la sua base
+- Metodi come =perimetro()= ed =area()= previsti in =Figura= non si
+  possono dettagliare in quanto manca l’informazione su come interpretare la figura
+- Si dice che una classe come Figura è *astratta* (*abstract*) proprio perchè ancora incompleta
+  - Spetterà poi alle classi eredi concretizzare tutti quegli aspetti
+    previsti in =Figura= ma al momento astratti
+
+** Implementazione classe Figura
+
+#+begin_src  java
+      public abstract class Figura {
+        private double dimensione;
+        public Figura( double dim ){
+              if( dim<=0 )
+                  throw new IllegalArgumentException();
+              this.dimensione=dim;
+        }
+        protected getDimensione(){ return dimensione;}
+        public abstract double perimetro();
+        public abstract double area();
+    }
+#+end_src
+
+** Discussione II
+
+- Una classe astratta come =Figura= non è istanziabile.
+  \pause
+  - Allora a che ... serve ?
+    \pause
+  - Serve come base per progettare classi eredi!
+- Per definire una classe astratta si deve premettere al nome class la
+  keyword  =abstract=
+- In una classe astratta uno o più metodi sono di norma astratti.
+  - Una classe erede  è concreta se implementa (ne fornisce cioè il corpo) tutti i metodi abstract.
+    - Se qualche metodo rimane ancora astratto, anche la classe erede è astratta e spetta ad un ulteriore erede implementare i rimanenti metodi abstract etc.
+- Si nota che in una classe astratta possono essere presenti campi dati (es. dimensione) e metodi concreti.
+  - Ad esempio =getDimensione()=, utile solo per le classi eredi (esportazione protected), è concreto. 
+
+
+** Implementazione classe Cerchio
+\scriptsize
+#+begin_src  java
+  public class Cerchio extends Figura{ 
+      public Cerchio( double raggio )( super(raggio);}
+      public Cerchio( Cerchio c ){ super(c.getDimensione());}
+      public double getRaggio(){ return getDimensione();}
+
+      public double perimetro(){ return 2*Math.PI‘ getDimensione(); }//perimetro
+      public double area(){
+          double r=getDimensione();
+          return PI*r;
+      }
+      public String toString(){
+          return “Cerchio: raggio=“+getDimensione();
+      }//toString
+     public boolean equals(Object other){...}
+  }//Cerchio
+#+end_src
+
+- Essendo privato il campo dimensione di =Figura=, si è fatto ricorso
+  ai metodi =getDimensione()/setDimensione()= per accedervi da dentro =Cerchio=.
+- Il metodo =equals()= necessariamente è peculiare di ogni classe
+  erede, e per questa ragione non è stato previsto in =Figura=.
+  - Similmente per il metodo =toString()=
+  - In altre situazioni può essere invece conveniente anticipare nella
+    super classe una implementazione dei metodi =equals()=, =hashCode()= e =toString()=
+  
+** Esercizi
+- Si implementi una classe =Rettangolo=
+- Si implementi una classe =Utility= che contenga soltanto metodi
+  statici. Fornire l'implementazione della seguente funzione:
+  - =areaMassima=: riceve in ingresso una collezione di figure e
+    restituisce quella con l'area massima.
+
+
+
+** Una classe astratta per il problema dell'ordinamento
+  
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+- Di seguito sivaluta la possibilità di risolvere il problema
+  dell'ordinamento di un array di oggetti
+- Occorre avere  una classe che fornisce un metodo di ordinamento che
+  si fonda su un criterio di confronto da specializzare di caso in caso.
+  - In fondo, la logica dell’ordinamento è sempre la stessa,
+    indipendentemente dalla tipologia degli oggetti
+    - Occorre specializzare il concetto di minore/maggiore
+
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+\scriptsize
+#+begin_src java
+  public abstract class Sortable{
+     protected abstract int compareTo( Sortable x );
+     public static void sort( Sortable []v ){
+            for( int j=v.length-1; j>0; j - ){
+                int iMax=0;
+                for( int i=0; i<=j; i++ )
+                    if( v[i].compareTo(v[iMax))>0 ) iMax=i;
+                //scambia
+                Sortable park=v[j];
+                v[j]=v[iMax];
+                v[iMax]=park;
+            }//for
+     }//sort
+  }//Sortable
+#+end_src
+
+- Il metodo =compareTo= deve sostituire:
+  - 0 se l'istanza passata in input è uguale a =this=
+  - un valore <0 se =this= è minore dell'istanza passata in input
+  - un valore >0 se =this= è maggiore dell'istanza passata in input
+** Esercizi
+- Si definisca una  classe =Intero=, erede di =Sortable=, che
+  memorizzi al suo interno il valore di un numero intero, sulla base
+  del quale dovrà essere eseguito l'ordinamento
+- Testare il funzionamento della nuova classe
+
+  \vspace{1cm}
+
+  - Inglobare la classe =Sortable= nel progetto relative alla class =Razionale=
+  - Testare il funzionamento
+
+** Limiti dell'approccio
+L’approccio non è applicabile se una classe i cui oggetti si vogliono ordinare, è già legata in una gerarchia di
+ereditarietà e dunque non può estendere Sortable. Es. volendo ordinare oggetti di classe Impiegato, si
+potrebbe trovare che Impiegato già estende Persona e dunque non può estendere Sortable ... Sarebbe utile
+l’ereditarietà multipla cosi che Impiegato potrebbe estendere Persona e Sortable ... Ma Java ammette solo
+l’ereditarietà singola.
+In più, se si vuole cambiare il metodo di ordinamento, si può progettare una classe erede di Sortable, es.
+quickSortable, che lascia astratto compareTo() ma ridefinisce il metodo sort() secondo quickSort. Le classi
+eredi che vogliono sfruttare quickSort possono derivare da Sortable ma devono utilizzare il metodo statico di
+ordinamento di QuickSortable.
+Il concetto di interfaccia
+Anche se non è possibile per una classe ereditare simultaneamente da più di una super classe, Java
+
+** COMMENT Il concetto di interfaccia
+
+Il concetto di interfaccia
+Anche se non è possibile per una classe ereditare simultaneamente da più di una super classe, Java
+introduce un meccanismo per “simulare” l'eredità multipla: le interfacce.
+Una classe può estendere una sola classe ma può implementare zero, una o più interfacce.
+Un'interfaccia (interface) è una raccolta di intestazioni (segnature) di metodi. In più essa può ammettere
+definizioni di attributi costanti e tipi innestati (si veda più avanti nel testo). Le segnature di metodi sono
+definizioni astratte pur senza il modificatore abstract. Un’interfaccia, cosi come una classe astratta, non è
+istanziabile. Una classe che implementi un'interfaccia deve fornire un’implementazione di tutti i metodi definiti
+nell’interfaccia, diversamente la classe è astratta.
+In java.lang è definita la seguente interfaccia:
+public interface Comparable{
+public int compareTo( Object x );
+}//Comparable
+Per massima generalità, compareTo() lavora su Object. compareTo(x) ritorna <0, ==0, >0 a seconda che
+l’oggetto this sia rispettivamente minore, uguale o maggiore di x.
+
+
+** COMMENT Razionali comparabili
+#+begin_src  java
+Razionali comparabili
+______
+__
+__
+package poo.razionali;
+public class Razionale implements Comparable{
+//... come prima
+public int compareTo( Object x ){
+Razionale r=(Razionale)x;
+int mcm=(this.denominatore*r.denominatore)/mcd(this.denominatore, r.denominatore);
+int n1=(mcm/this.denominatore)‘ this.numeratore;
+int n2=(mcm/r.denominatore)*r.numeratore;
+if( n1<n2 ) return -1;
+ifj n1>n2 ) return 1;
+return 0;
+}//compareTo
+}//Razionale
+
+#+end_src
+
+Dal fatto che Razionale estende (implicitamente) Object, discende che i razionali sono anche di tipo Object.
+Dal fatto che Razionale implementa Comparable, deriva che gli oggetti razionali sono anche comparabili,
+ossia di tipo Comparable (aumento del polimorfismo). Un array di Comparable è dunque un array di oggetti sui
+quali è definito il criterio di confronto.
+La classe di utilità Array di poo.util
+Array è progettata per fornire alcuni metodi di uso ricorrente sugli array, es. i metodi di ordinamento, ricerca
+
+** COMMENT Digressione: Algoritmi di ordinamento
