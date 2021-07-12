@@ -779,44 +779,49 @@ essere incrementata/decrementata.
   - Testare il funzionamento
 
 ** Limiti dell'approccio
-L’approccio non è applicabile se una classe i cui oggetti si vogliono ordinare, è già legata in una gerarchia di
-ereditarietà e dunque non può estendere Sortable. Es. volendo ordinare oggetti di classe Impiegato, si
-potrebbe trovare che Impiegato già estende Persona e dunque non può estendere Sortable ... Sarebbe utile
-l’ereditarietà multipla cosi che Impiegato potrebbe estendere Persona e Sortable ... Ma Java ammette solo
-l’ereditarietà singola.
-In più, se si vuole cambiare il metodo di ordinamento, si può progettare una classe erede di Sortable, es.
-quickSortable, che lascia astratto compareTo() ma ridefinisce il metodo sort() secondo quickSort. Le classi
-eredi che vogliono sfruttare quickSort possono derivare da Sortable ma devono utilizzare il metodo statico di
-ordinamento di QuickSortable.
-Il concetto di interfaccia
-Anche se non è possibile per una classe ereditare simultaneamente da più di una super classe, Java
+- L’approccio non è applicabile se una classe i cui oggetti si
+  vogliono ordinare, è già legata in una gerarchia di ereditarietà e dunque non può estendere =Sortable=
+  -  volendo ordinare oggetti di classe =Impiegato extends Persona=,
+    dunque non possiamo avere =Impiegato extends Persona, Sortable=
 
-** COMMENT Il concetto di interfaccia
+# -  In più, se si vuole cambiare il metodo di ordinamento, si può progettare una classe erede di =Sortable=, es.
+# =quickSortable=, che lascia astratto =compareTo= ma ridefinisce il
+# metodo =sort= secondo =quickSort=. Le classi
+# eredi che vogliono sfruttare quickSort possono derivare da Sortable ma devono utilizzare il metodo statico di
+# ordinamento di QuickSortable.
+# Il concetto di interfaccia
+# Anche se non è possibile per una classe ereditare simultaneamente da più di una super classe, Java
 
-Il concetto di interfaccia
-Anche se non è possibile per una classe ereditare simultaneamente da più di una super classe, Java
-introduce un meccanismo per “simulare” l'eredità multipla: le interfacce.
-Una classe può estendere una sola classe ma può implementare zero, una o più interfacce.
-Un'interfaccia (interface) è una raccolta di intestazioni (segnature) di metodi. In più essa può ammettere
-definizioni di attributi costanti e tipi innestati (si veda più avanti nel testo). Le segnature di metodi sono
-definizioni astratte pur senza il modificatore abstract. Un’interfaccia, cosi come una classe astratta, non è
-istanziabile. Una classe che implementi un'interfaccia deve fornire un’implementazione di tutti i metodi definiti
-nell’interfaccia, diversamente la classe è astratta.
-In java.lang è definita la seguente interfaccia:
+**  Il concetto di interfaccia
+
+- Rappresentano un meccanismo per simulare l'eredità multipla: le interfacce
+  - Una classe può estendere una sola classe ma può implementare zero,
+    una o più interfacce
+- Un'interfaccia (=interface=) è una raccolta di intestazioni (segnature) di metodi
+  - Le segnature di metodi sono definizioni astratte pur senza il
+    modificatore =abstract=
+  - Una classe che implementi un'interfaccia deve fornire
+    un’implementazione di tutti i metodi definiti nell’interfaccia,
+    altrimenti  la classe è da riternersi astratta.
+- Ammette definizioni di attributi costanti e tipi innestati
+-  Un’interfaccia, cosi come una classe astratta, non è istanziabile.
+*** A proposito di Sortable                                       :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+\scriptsize
+#+begin_src  java
 public interface Comparable{
 public int compareTo( Object x );
-}//Comparable
-Per massima generalità, compareTo() lavora su Object. compareTo(x) ritorna <0, ==0, >0 a seconda che
-l’oggetto this sia rispettivamente minore, uguale o maggiore di x.
+}//Comparable  
+#+end_src
 
+-  Per massima generalità, compareTo() lavora su Object. compareTo(x) ritorna <0, ==0, >0 a seconda chel’oggetto this sia rispettivamente minore, uguale o maggiore di x.
 
-** COMMENT Razionali comparabili
+**  Razionali comparabili
+\scriptsize
 #+begin_src  java
-Razionali comparabili
-______
-__
-__
-package poo.razionali;
+
 public class Razionale implements Comparable{
 //... come prima
 public int compareTo( Object x ){
@@ -832,11 +837,306 @@ return 0;
 
 #+end_src
 
-Dal fatto che Razionale estende (implicitamente) Object, discende che i razionali sono anche di tipo Object.
-Dal fatto che Razionale implementa Comparable, deriva che gli oggetti razionali sono anche comparabili,
-ossia di tipo Comparable (aumento del polimorfismo). Un array di Comparable è dunque un array di oggetti sui
-quali è definito il criterio di confronto.
-La classe di utilità Array di poo.util
-Array è progettata per fornire alcuni metodi di uso ricorrente sugli array, es. i metodi di ordinamento, ricerca
+- =Razionale= estende (implicitamente) Object, discende che i razionali sono anche di tipo =Object=
+- =Razionale= implementa =Comparable=, deriva che gli oggetti
+  razionali sono anche comparabili, ossia di tipo =Comparable= (aumento del polimorfismo).
+  - Un array di =Comparable= è dunque un array di oggetti sui quali è definito il criterio di confronto.
 
-** COMMENT Digressione: Algoritmi di ordinamento
+
+** La classe di utilità Array
+\scriptsize
+#+begin_src  java
+package poo.util:
+public final class Array{//versione completa fornita a parte
+private Array(){}
+public static void selectionSort( Comparable []v ){
+for( int j=v.length-1; j>0; j-- ){
+int indMax=0;
+for( int i=1; i<=j; i++ )
+if( v[i].compareTo(v[indMax])>0 )
+indMax=i;
+//scambia v[indMax] con v[j]
+Comparable park=v[j]; v[j]=v[indMax];
+v[indMax]=park;
+}
+}//selectionSort
+public static void bubbleSort( Comparable []v ){
+int ius=0;//inizializzazione fittizia
+for( int j=v.length-1; j>0; j=ius )(
+int scambi=0;
+for( int i=0; i<j; i++ )
+if( v[i].compareTo(v[i+1])>0 ){
+//scambia v[i] con v[i+1]
+Comparable park=v[i);
+v[i)=v(i+1j; v[i+1]=park;
+scambi++;
+ius=i;//indice ultimo scambio
+}
+if( scambi==0 ) break;
+}//for esterno
+}//bubbleSort
+public static int ricercaBinaria( Comparable []v, Comparable x ){...}
+
+#+end_src
+
+** Ordinamento di razionali comparabili
+#+begin_src  java
+
+Razionale []v={ //esempio di caricamento
+new Razionale(2,3), new Razionale(4,7),
+new Razionale(2,8), new Razionale(3,9)};
+Array.selectionSort( v );
+for( int i=0; icv.length; i++ ) System.out.println( v[i] );  
+#+end_src
+
+
+** Discussione
+- L’uso dell'interfaccia =Comparable= rende possibile approntare una
+  classe di utilità come Array che esporta i più  comuni algoritmi di ordinamento e ricerca (lineare e binaria).
+  - Diverse varianti sono disponibili di uno stesso metodo (overloading):
+    - es.  litisconsortile , di Comparable
+    - c’è una versione che accetta un array di int e un’altra che accetta un array di double
+
+- Questo modo di opeare, come si vedrà nel seguito, è ampiamento sfruttato dalla libreria di Java (API)
+- Per avvalersi di un metodo qualsiasi di ordinamento di Array, è
+sufficiente che una classe applicativa implementi =Comparable=
+- Quando una classe implementa =Comparable=, si dice che i suoi oggetti dispongono dell'ordinamento naturale
+- L’approccio basato sull'interfaccia lascia libera una classe di
+ ereditare da una super classe
+  - Non sussistono più i limiti riscontrati con il metodo basato sulla classe astratta =Sortable=
+- Le interfacce possono essere costruite anche per estensione
+  (=extends=)
+  - Se l’interfaccia =I2= estende =I1=, allora banalmente in =I2= si
+    ritrovano tutte le intestazioni di metodi di =I1= più quelle
+    previste da =I2=
+
+
+** Regole di un buon progetto di una classe Java
+- Alla luce delle conoscenze sin qui acquisite, si può dire che il progetto di una classe, per generalità, dovrebbe:
+  - prevedere il metodo =boolean equals(Object x)=
+  - prevedere il metodo =String toString()=
+  - prevedere il metodo =int hashcode()= che ritorna un intero identificativo unico dell'oggetto
+    - Se due oggetti sono uguali secondo =equals=, allora il loro
+      hashcode deve essere uguale
+    - Tuttavia oggetti non uguali possono avere lo stesso valore di
+      hashcode
+  - Per definire i metodi equals() e hashCode() occorre prestare  ai
+    campi (di norma immutabili) che identificano un oggetto
+    - per una persona potrebbero essere cognome e nome o il campo codice fiscale
+    - per uno studente la matricola etc
+- Implementare l’interfaccia =Comparable= e dunque il metodo
+  =compareTo=, se si prevede che gli oggetti debbano essere assoggettati ad ordinamento o comunque a confronti (es. per ragioni di ricerca)
+
+** Un altro esempio di uso delle interfacce                      :B_columns:
+\scriptsize
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+**** Left                                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+- La relazione con il rombo indica che =Triangolo= contiene 3 (molteplicità della relazione) punti
+- La linea tratteggiata terminante con una freccia bianca indica che Triangolo implementa l’interfaccia =FiguraPiana=
+- =Cerchio= estende =Punto= e implementa =FiguraPiana=.
+- Ovviamente, un’interfaccia può far parte di un package esplicito ed essere raccolta in un file
+- Essa va compilata come le classiPonendo FiguraPiana in
+  #+begin_src  java
+package poo.geometria;
+public interface FiguraPiana{
+doublé perimetro();
+doublé area();
+}//FiguraPiana
+package poo.geometria;
+public class Triangolo implements FiguraPianaf
+public doublé perimetro(){...}
+public doublé area(){...}
+}//Triangolo  
+#+end_src
+
+
+**** Rigth                                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.3]{\figures/figureif.png}
+\end{figure}
+#+end_export
+
+
+
+- Il discorso può proseguire ulteriormente:
+  - Da =Cerchio= si può derivare =Sfera= che è una figura solida.
+  - A questo punto si potrebbe definire un'interfaccia =FiguraSolida= che extends =FiguraPiana= ed aggiunge
+    - metodi come double  =areaLaterale()= e =double volume()=
+
+** COMMENT Un altro esempio di uso delle interfacce
+Un’interfaccia consente di accomunare classi che diversamente resterebbero isolate e dunque trattate ad hoc.
+Consideriamo una semplice gerarchia: dalla classe Punto si deriva Cerchio, che in più aggiunge il raggio.
+Ricordiamo che in precedenza abbiamo definito una classe Triangolo che contiene tre punti, una classe
+Poligono (supposto convesso) che contiene n>=3 punti. Triangolo e Poligono non estendono Punto ma
+contengono (relazione di composizione has-a) punti. Ovviamente queste tre classi Cerchio, Triangolo e
+Poligono non condividono nulla (eccetto che derivano da Object).
+
+In questa situazione, potrebbe essere conveniente introdurre una interfaccia FiguraPiana con i due metodi per
+calcolare perimetro ed area. Imponendo a Cerchio, Triangolo e Poligono di implementare questa stessa
+interfaccia, di fatto si ottiene di “imparentarle” e di considerarle in modo omogeneo, ad esempio
+conservandone oggetti in un array di FiguraPiana. Tutto ciò si può esprimere con il seguente diagramma UML
+(si veda il cap. 21):
+
+
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.4]{\figures/figureif2.png}
+\end{figure}
+#+end_export
+
+La relazione con il rombo indica che Triangolo contiene 3 (molteplicità della relazione) punti. La linea
+tratteggiata terminante con una freccia bianca indica che Triangolo implementa l’interfaccia FiguraPiana.
+Cerchio estende Punto e implementa FiguraPiana. Ovviamente, un’interfaccia può far parte di unpackage
+esplicito ed essere raccolta in un file. Essa va compilata come le classi. Ponendo FiguraPiana in
+poo.geometria si ha:
+package poo.geometria;
+public interface FiguraPiana{
+doublé perimetro();
+doublé area();
+}//FiguraPiana
+package poo.geometria;
+public class Triangolo implements FiguraPianaf
+public doublé perimetro(){...}
+public doublé area(){...}
+}//Triangolo
+etc. per Poligono e Cerchio
+Il discorso può proseguire ulteriormente come segue. Da Cerchio si può derivare Sfera che è una figura
+solida. A questo punto si potrebbe definire un'interfaccia FiguraSolida che extends FiguraPiana ed aggiunge
+metodi come doublé areaLaterale() e doublé volume() etc. Si suppone che il centro di una sfera appartenga al
+piano X-Y, che un cilindro sia appoggiato sul piano X-Y etc.
+
+
+Ovviamente in FiguraSolida si ritrova il perimetro che non ha senso in una figura a 3 dimensioni.
+Implementando FiguraSolida in Sfera si potrebbe codificare perimetro() in modo da generare un errore
+(eccezione). Il metodo area(), invece, si può intendere che calcoli l’area totale. Nel caso della sfera area
+laterale e area totale coincidono. In un Cilindro, altro possibile
+erede di Cerchio, le due aree sono distinte.
+
+
+
+laterale e area totale coincidono. In un Cilindro, altro possibile erede di Cerchio, le due aree sono distinte.
+L’interfaccia FiguraSolida:
+_________________________________ ___________
+public interface FiguraSolida extends FiguraPiana{
+doublé areaLaterale();
+doublé volume();
+}//FiguraSolida
+Seguono alcune classi concrete:
+public class Sfera extends Cerchio implements FiguraSolidaj
+public doublé perimetro(){ throw new UnsupportedOperationException();}
+public doublé area(){ return 4‘ Math.PI‘ raggio*raggio;}
+public doublé areaLaterale(){ return 4*Math.PI‘ raggio*raggio;}
+public doublé volume(){ return (4*Math.Prraggio‘ raggio*raggio)/3;}
+}//Sfera
+public class Cilindro extends Cerchio implements FiguraSolida{
+private doublé altezza;
+public doublé perimetro(){ throw new UnsupportedOperationException();}
+public doublé area(){ return areaLaterale()+2*raggio*raggio*Math.PI;}
+public doublé areaLaterale(){ return 2*Math.PI*raggio*altezza;}
+public doublé volume(){ return raggio*raggio*Math.PI*altezza;}
+}//Cilindro
+A questo punto si è visto una gerarchia di classi ancorata sulla classe astratta Figura e una collezione di classi
+di figure basate su interfacce e punti. Qual è l’approccio migliore ? Non c’è una risposta assoluta: tutto
+dipende dalle esigenze dell’applicazione. Se sono sufficienti le dimensioni, si può optare per la prima
+soluzione, se servono i punti-vertici si può passare all'altra organizzazione.
+Per usare queste costanti in una classe cliente, basta "implementare” l'interfaccia come segue:
+package poo.util;
+public class Client implements Costanti{//demo
+public static void main( Stringi] args ){
+System.ouf.printf(''PI=%1.5f%n",P/);
+System. ouf.printf("e=%1.5f%n", 5);
+System.0(v/.printf(’’SQRT(2)=%1,5f%n",SQRT 2);
+System.ouf.printf("SEC_PEFLDAY=%5d%n'',S5C_P5fl_D/4y);
+}//main
+}//Client
+Esercizi
+1. Programmare altre classi eredi di Figura come Quadrato, Rombo, Triangolo,Trapeziolsoscele, etc. La
+classe Triangolo potrebbe esportare un metodo per conoscere il tipo di triangolo etc.
+2. Programmare una classe Cono che estende Cerchio e implementa l’interfaccia FiguraSolida.
+3. Analizzare le dichiarazioni che seguono ed individuare e motivare ogni situazione di errore presente.
+interface T 1 { void foo();}
+interface T2{ int foo(int i);}
+interface T3{ int foo();}
+interface T4 extends T1, T3{]
+class A{
+public int foo() { return 0;}
+}// A
+class B extends A implements T1, T2{
+public void foo() { System.out.printlnCvoid foo()“; }
+public int foo(int i) { return 1;}
+}//B
+class C extends A implements T3{
+public int foo() { return 0;}
+}// C
+class D extends A implements T 1 {
+}// D
+Class E extends A implements T3,T4{
+}//E
+È possibile “riconciliare" le due gerarchie di classi di figure ? La risposta è si. È sufficiente che la classe
+astratta Figura implementi l’interfaccia FiguraPiana. Diventa cosi possibile introdurre ad es. un array di
+FiguraPiana in cui si possono collocare oggetti-figure dell’una o dell’altra gerarchia.
+
+** COMMENT Un'interfaccia come pacchetto di costanti
+Come caso particolare un’interfaccia potrebbe essere utilizzata per
+esporre alcune costanti di uso frequente.
+
+Vediamo un esempio.
+package poo.util;
+public interface Costanti (
+final doublé P/=3.14159; //pi greco
+final doublé 5=2.71828; //numero di Nepero
+final doublé SQPT_2= 1.41421; //radice quadrata di 2
+final int SEC_PEfì_DAY=86A00\ //secondi in un giorno
+}//Costanti
+
+
+Per usare queste costanti in una classe cliente, basta "implementare” l'interfaccia come segue:
+package poo.util;
+public class Client implements Costanti{//demo
+public static void main( Stringi] args ){
+System.ouf.printf(''PI=%1.5f%n",P/);
+System. ouf.printf("e=%1.5f%n", 5);
+System.0(v/.printf(’’SQRT(2)=%1,5f%n",SQRT 2);
+System.ouf.printf("SEC_PEFLDAY=%5d%n'',S5C_P5fl_D/4y);
+}//main
+}//Client
+Esercizi
+
+
+** Esercizi
+-  Analizzare le dichiarazioni che seguono ed individuare e motivare ogni situazione di errore presente.
+interface T 1 { void foo();}
+interface T2{ int foo(int i);}
+interface T3{ int foo();}
+interface T4 extends T1, T3{]
+class A{
+public int foo() { return 0;}
+}// A
+class B extends A implements T1, T2{
+public void foo() { System.out.printlnCvoid foo()“; }
+public int foo(int i) { return 1;}
+}//B
+class C extends A implements T3{
+public int foo() { return 0;}
+}// C
+class D extends A implements T 1 {
+}// D
+Class E extends A implements T3,T4{
+}//E
+
+** Esercizi
+
+-  Programmare altre classi eredi di Figura come Quadrato, Rombo, Triangolo,Trapeziolsoscele, etc. La
+classe Triangolo potrebbe esportare un metodo per conoscere il tipo di triangolo etc.
+-  Programmare una classe Cono che estende Cerchio e implementa l’interfaccia FiguraSolida.
