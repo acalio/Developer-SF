@@ -608,7 +608,7 @@ essere incrementata/decrementata.
 
 ****                                                               :BMCOL:
 :PROPERTIES:
-:BEAMER_col: 0.7
+:BEAMER_col: 0.6
 :END:
 - Si considerano le comuni figure piane:
   - cerchio, quadrato, rombo, trapezio ...
@@ -624,11 +624,11 @@ essere incrementata/decrementata.
 
 ****                                                               :BMCOL:
 :PROPERTIES:
-:BEAMER_col: 0.3
+:BEAMER_col: 0.4
 :END:
 #+begin_export latex
 \begin{figure}
-\includegraphics[scale=0.4]{\figures/figuraGer.png}
+\includegraphics[scale=0.3]{\figures/figuraGer.png}
 \end{figure}
 #+end_export
 
@@ -655,17 +655,18 @@ essere incrementata/decrementata.
 ** Implementazione classe Figura
 
 #+begin_src  java
-      public abstract class Figura {
-        private double dimensione;
-        public Figura( double dim ){
-              if( dim<=0 )
-                  throw new IllegalArgumentException();
-              this.dimensione=dim;
-        }
-        protected getDimensione(){ return dimensione;}
-        public abstract double perimetro();
-        public abstract double area();
-    }
+  public abstract class Figura {
+      private double dimensione;
+      public Figura( double dim ){
+          if( dim<=0 )
+              throw new IllegalArgumentException();
+          this.dimensione=dim;
+      }
+    
+      protected getDimensione(){ return dimensione;}
+      public abstract double perimetro();
+      public abstract double area();
+  }
 #+end_src
 
 ** Discussione II
@@ -692,13 +693,13 @@ essere incrementata/decrementata.
       public Cerchio( Cerchio c ){ super(c.getDimensione());}
       public double getRaggio(){ return getDimensione();}
 
-      public double perimetro(){ return 2*Math.PI‘ getDimensione(); }//perimetro
+      public double perimetro(){ return 2*Math.PI * getDimensione(); }//perimetro
       public double area(){
           double r=getDimensione();
           return PI*r;
       }
       public String toString(){
-          return “Cerchio: raggio=“+getDimensione();
+          return "Cerchio: raggio="+getDimensione();
       }//toString
      public boolean equals(Object other){...}
   }//Cerchio
@@ -768,29 +769,55 @@ essere incrementata/decrementata.
   - un valore <0 se =this= è minore dell'istanza passata in input
   - un valore >0 se =this= è maggiore dell'istanza passata in input
 ** Esercizi
+**** Es. 1                                                       :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
 - Si definisca una  classe =Intero=, erede di =Sortable=, che
   memorizzi al suo interno il valore di un numero intero, sulla base
   del quale dovrà essere eseguito l'ordinamento
 - Testare il funzionamento della nuova classe
 
-  \vspace{1cm}
-
-  - Inglobare la classe =Sortable= nel progetto relative alla class =Razionale=
-  - Testare il funzionamento
+**** Es. 2                                                       :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+ - Inglobare la classe =Sortable= nel progetto relative alla class =Razionale=
+ - Testare il funzionamento
 
 ** Limiti dell'approccio
 - L’approccio non è applicabile se una classe i cui oggetti si
   vogliono ordinare, è già legata in una gerarchia di ereditarietà e dunque non può estendere =Sortable=
-  -  volendo ordinare oggetti di classe =Impiegato extends Persona=,
-    dunque non possiamo avere =Impiegato extends Persona, Sortable=
+  - volendo ordinare oggetti di classe =Impiegato extends Persona=,
+   dunque non possiamo avere =Impiegato extends Persona, Sortable=
 
-# -  In più, se si vuole cambiare il metodo di ordinamento, si può progettare una classe erede di =Sortable=, es.
-# =quickSortable=, che lascia astratto =compareTo= ma ridefinisce il
-# metodo =sort= secondo =quickSort=. Le classi
-# eredi che vogliono sfruttare quickSort possono derivare da Sortable ma devono utilizzare il metodo statico di
-# ordinamento di QuickSortable.
-# Il concetto di interfaccia
-# Anche se non è possibile per una classe ereditare simultaneamente da più di una super classe, Java
+\pause
+
+***   Columns                                                   :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+**** Polimorfismo                                          :B_block:BMCOL:
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.3
+:END:
+- Operazioni lecite?  --->
+**** Snippet                                                       :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.7
+:END:
+#+begin_src java
+  class Impiegato implements Persona, Sortable {....}
+
+
+  public static void main(String[] args) {
+    Persona p = new Impiegato(....);
+    Sortable s = new Impiegato(...);
+  }
+#+end_src
+
 
 **  Il concetto di interfaccia
 
@@ -805,38 +832,47 @@ essere incrementata/decrementata.
     altrimenti  la classe è da riternersi astratta.
 - Ammette definizioni di attributi costanti e tipi innestati
 -  Un’interfaccia, cosi come una classe astratta, non è istanziabile.
-*** A proposito di Sortable                                       :B_block:
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:END:
+**** A proposito di Sortable                               :B_block:BMCOL:
 :PROPERTIES:
 :BEAMER_env: block
+:BEAMER_col: 0.6
 :END:
-\scriptsize
+- Per massima generalità =compareTo()= lavora su =Object=
+  - =compareTo(x)= restituisce  un valore:
+    - =<0,  ==0, >0=  se l'oggetto =this= è  rispettivamente minore, uguale o maggiore di =x=.
+**** Snippet                                                       :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
 #+begin_src  java
 public interface Comparable{
 public int compareTo( Object x );
 }//Comparable  
 #+end_src
-
--  Per massima generalità, compareTo() lavora su Object. compareTo(x) ritorna <0, ==0, >0 a seconda chel’oggetto this sia rispettivamente minore, uguale o maggiore di x.
-
 **  Razionali comparabili
 \scriptsize
 #+begin_src  java
 
-public class Razionale implements Comparable{
-//... come prima
-public int compareTo( Object x ){
-Razionale r=(Razionale)x;
-int mcm=(this.denominatore*r.denominatore)/mcd(this.denominatore, r.denominatore);
-int n1=(mcm/this.denominatore)‘ this.numeratore;
-int n2=(mcm/r.denominatore)*r.numeratore;
-if( n1<n2 ) return -1;
-ifj n1>n2 ) return 1;
-return 0;
-}//compareTo
+  public class Razionale implements Comparable{
+  //... come prima
+  public int compareTo( Object x ){
+      Razionale r=(Razionale)x;
+      int mcm=(this.denominatore*r.denominatore)/mcd(this.denominatore, r.denominatore);
+      int n1=(mcm/this.denominatore)‘ this.numeratore;
+      int n2=(mcm/r.denominatore)*r.numeratore;
+      if( n1<n2 ) return -1;
+      ifj n1>n2 ) return 1;
+      return 0;
+  }//compareTo
 }//Razionale
 
 #+end_src
-
+\small
 - =Razionale= estende (implicitamente) Object, discende che i razionali sono anche di tipo =Object=
 - =Razionale= implementa =Comparable=, deriva che gli oggetti
   razionali sono anche comparabili, ossia di tipo =Comparable= (aumento del polimorfismo).
@@ -844,44 +880,18 @@ return 0;
 
 
 ** La classe di utilità Array
-\scriptsize
-#+begin_src  java
-package poo.util:
-public final class Array{//versione completa fornita a parte
-private Array(){}
-public static void selectionSort( Comparable []v ){
-for( int j=v.length-1; j>0; j-- ){
-int indMax=0;
-for( int i=1; i<=j; i++ )
-if( v[i].compareTo(v[indMax])>0 )
-indMax=i;
-//scambia v[indMax] con v[j]
-Comparable park=v[j]; v[j]=v[indMax];
-v[indMax]=park;
-}
-}//selectionSort
-public static void bubbleSort( Comparable []v ){
-int ius=0;//inizializzazione fittizia
-for( int j=v.length-1; j>0; j=ius )(
-int scambi=0;
-for( int i=0; i<j; i++ )
-if( v[i].compareTo(v[i+1])>0 ){
-//scambia v[i] con v[i+1]
-Comparable park=v[i);
-v[i)=v(i+1j; v[i+1]=park;
-scambi++;
-ius=i;//indice ultimo scambio
-}
-if( scambi==0 ) break;
-}//for esterno
-}//bubbleSort
-public static int ricercaBinaria( Comparable []v, Comparable x ){...}
 
+#+begin_src  java
+  public final class Array{//versione completa fornita a parte
+  private Array(){}
+  public static void selectionSort( Comparable []v ){ ... }
+  public static void bubbleSort( Comparable []v ){ .... }
+  public static int ricercaBinaria( Comparable []v, Comparable x ){...}
+}
 #+end_src
 
-** Ordinamento di razionali comparabili
+** COMMENT Ordinamento di razionali comparabili
 #+begin_src  java
-
 Razionale []v={ //esempio di caricamento
 new Razionale(2,3), new Razionale(4,7),
 new Razionale(2,8), new Razionale(3,9)};
@@ -944,20 +954,18 @@ sufficiente che una classe applicativa implementi =Comparable=
 - Ovviamente, un’interfaccia può far parte di un package esplicito ed essere raccolta in un file
 - Essa va compilata come le classiPonendo FiguraPiana in
   #+begin_src  java
-package poo.geometria;
 public interface FiguraPiana{
-doublé perimetro();
-doublé area();
+double perimetro();
+double area();
 }//FiguraPiana
-package poo.geometria;
-public class Triangolo implements FiguraPianaf
-public doublé perimetro(){...}
-public doublé area(){...}
+public class Triangolo implements FiguraPiana { 
+public double perimetro(){...}
+public double area(){...}
 }//Triangolo  
 #+end_src
 
 
-**** Rigth                                                         :BMCOL:
+**** Right                                                         :BMCOL:
 :PROPERTIES:
 :BEAMER_col: 0.4
 :END:
@@ -969,174 +977,402 @@ public doublé area(){...}
 
 
 
+      
+**  Discussione
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:END:
+****  Left                                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+- Un’interfaccia consente di accomunare classi che diversamente resterebbero isolate
+- Consideriamo una semplice gerarchia: dalla classe =Punto= si deriva
+  =Cerchio=, che in più aggiunge il raggio
+  - in precedenza abbiamo definito una classe =Triangolo= che contiene tre punti
+  - =Triangolo= e =Poligono= non estendono =Punto= perché *cotengono* punti
+- Le tre classi, =Cerchio=, =Poligono= e =Triangolo= non condividono niente
+  - tuttavia, potrebbe essere conveniente introdurre una interfaccia
+    =FiguraPiana= con i due metodi necessari al calcolo di perimetro e area
+  - si impone quindi alla classe =Cerchio=, =Triangolo= e =Poligono=
+    di implementare questa interfaccia comune, appunto =FiguraPiana=
+    - in questo modo possiamo memorizzarle in una stessa struttura dati
+
+****                                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/figureif.png}
+\end{figure}
+#+end_export
+
+# La relazione con il rombo indica che Triangolo contiene 3 (molteplicità della relazione) punti. La linea
+# tratteggiata terminante con una freccia bianca indica che Triangolo implementa l’interfaccia FiguraPiana.
+# Cerchio estende Punto e implementa FiguraPiana. Ovviamente, un’interfaccia può far parte di unpackage
+# esplicito ed essere raccolta in un file. Essa va compilata come le classi. Ponendo FiguraPiana in
+# poo.geometria si ha:
+# package poo.geometria;
+# public interface FiguraPiana{
+# doublé perimetro();
+# doublé area();
+# }//FiguraPiana
+# package poo.geometria;
+# public class Triangolo implements FiguraPianaf
+# public doublé perimetro(){...}
+# public doublé area(){...}
+# }//Triangolo
+# etc. per Poligono e Cerchio
+# Il discorso può proseguire ulteriormente come segue. Da Cerchio si può derivare Sfera che è una figura
+# solida. A questo punto si potrebbe definire un'interfaccia FiguraSolida che extends FiguraPiana ed aggiunge
+# metodi come doublé areaLaterale() e doublé volume() etc. Si suppone che il centro di una sfera appartenga al
+# piano X-Y, che un cilindro sia appoggiato sul piano X-Y etc.
+
+
+# Ovviamente in FiguraSolida si ritrova il perimetro che non ha senso in una figura a 3 dimensioni.
+# Implementando FiguraSolida in Sfera si potrebbe codificare perimetro() in modo da generare un errore
+# (eccezione). Il metodo area(), invece, si può intendere che calcoli l’area totale. Nel caso della sfera area
+# laterale e area totale coincidono. In un Cilindro, altro possibile
+# erede di Cerchio, le due aree sono distinte.
+
+
+
+# laterale e area totale coincidono. In un Cilindro, altro possibile erede di Cerchio, le due aree sono distinte.
+# L’interfaccia FiguraSolida:
+# _________________________________ ___________
+# public interface FiguraSolida extends FiguraPiana{
+# doublé areaLaterale();
+# doublé volume();
+# }//FiguraSolida
+# Seguono alcune classi concrete:
+# public class Sfera extends Cerchio implements FiguraSolidaj
+# public doublé perimetro(){ throw new UnsupportedOperationException();}
+# public doublé area(){ return 4‘ Math.PI‘ raggio*raggio;}
+# public doublé areaLaterale(){ return 4*Math.PI‘ raggio*raggio;}
+# public doublé volume(){ return (4*Math.Prraggio‘ raggio*raggio)/3;}
+# }//Sfera
+# public class Cilindro extends Cerchio implements FiguraSolida{
+# private doublé altezza;
+# public doublé perimetro(){ throw new UnsupportedOperationException();}
+# public doublé area(){ return areaLaterale()+2*raggio*raggio*Math.PI;}
+# public doublé areaLaterale(){ return 2*Math.PI*raggio*altezza;}
+# public doublé volume(){ return raggio*raggio*Math.PI*altezza;}
+# }//Cilindro
+# A questo punto si è visto una gerarchia di classi ancorata sulla classe astratta Figura e una collezione di classi
+# di figure basate su interfacce e punti. Qual è l’approccio migliore ? Non c’è una risposta assoluta: tutto
+# dipende dalle esigenze dell’applicazione. Se sono sufficienti le dimensioni, si può optare per la prima
+# soluzione, se servono i punti-vertici si può passare all'altra organizzazione.
+# Per usare queste costanti in una classe cliente, basta "implementare” l'interfaccia come segue:
+# package poo.util;
+# public class Client implements Costanti{//demo
+# public static void main( Stringi] args ){
+# System.ouf.printf(''PI=%1.5f%n",P/);
+# System. ouf.printf("e=%1.5f%n", 5);
+# System.0(v/.printf(’’SQRT(2)=%1,5f%n",SQRT 2);
+# System.ouf.printf("SEC_PEFLDAY=%5d%n'',S5C_P5fl_D/4y);
+# }//main
+# }//Client
+# Esercizi
+# 1. Programmare altre classi eredi di Figura come Quadrato, Rombo, Triangolo,Trapeziolsoscele, etc. La
+# classe Triangolo potrebbe esportare un metodo per conoscere il tipo di triangolo etc.
+# 2. Programmare una classe Cono che estende Cerchio e implementa l’interfaccia FiguraSolida.
+# 3. Analizzare le dichiarazioni che seguono ed individuare e motivare ogni situazione di errore presente.
+# interface T 1 { void foo();}
+# interface T2{ int foo(int i);}
+# interface T3{ int foo();}
+# interface T4 extends T1, T3{]
+# class A{
+# public int foo() { return 0;}
+# }// A
+# class B extends A implements T1, T2{
+# public void foo() { System.out.printlnCvoid foo()“; }
+# public int foo(int i) { return 1;}
+# }//B
+# class C extends A implements T3{
+# public int foo() { return 0;}
+# }// C
+# class D extends A implements T 1 {
+# }// D
+# Class E extends A implements T3,T4{
+# }//E
+# È possibile “riconciliare" le due gerarchie di classi di figure ? La risposta è si. È sufficiente che la classe
+# astratta Figura implementi l’interfaccia FiguraPiana. Diventa cosi possibile introdurre ad es. un array di
+# FiguraPiana in cui si possono collocare oggetti-figure dell’una o dell’altra gerarchia.
+
+
+
+
+** Discussione 
 - Il discorso può proseguire ulteriormente:
   - Da =Cerchio= si può derivare =Sfera= che è una figura solida.
   - A questo punto si potrebbe definire un'interfaccia =FiguraSolida= che extends =FiguraPiana= ed aggiunge
     - metodi come double  =areaLaterale()= e =double volume()=
 
-** COMMENT Un altro esempio di uso delle interfacce
-Un’interfaccia consente di accomunare classi che diversamente resterebbero isolate e dunque trattate ad hoc.
-Consideriamo una semplice gerarchia: dalla classe Punto si deriva Cerchio, che in più aggiunge il raggio.
-Ricordiamo che in precedenza abbiamo definito una classe Triangolo che contiene tre punti, una classe
-Poligono (supposto convesso) che contiene n>=3 punti. Triangolo e Poligono non estendono Punto ma
-contengono (relazione di composizione has-a) punti. Ovviamente queste tre classi Cerchio, Triangolo e
-Poligono non condividono nulla (eccetto che derivano da Object).
-
-In questa situazione, potrebbe essere conveniente introdurre una interfaccia FiguraPiana con i due metodi per
-calcolare perimetro ed area. Imponendo a Cerchio, Triangolo e Poligono di implementare questa stessa
-interfaccia, di fatto si ottiene di “imparentarle” e di considerarle in modo omogeneo, ad esempio
-conservandone oggetti in un array di FiguraPiana. Tutto ciò si può esprimere con il seguente diagramma UML
-(si veda il cap. 21):
-
-
 #+begin_export latex
 \begin{figure}
-\includegraphics[scale=0.4]{\figures/figureif2.png}
+\includegraphics[scale=0.5]{\figures/figureif3.png}
 \end{figure}
 #+end_export
 
-La relazione con il rombo indica che Triangolo contiene 3 (molteplicità della relazione) punti. La linea
-tratteggiata terminante con una freccia bianca indica che Triangolo implementa l’interfaccia FiguraPiana.
-Cerchio estende Punto e implementa FiguraPiana. Ovviamente, un’interfaccia può far parte di unpackage
-esplicito ed essere raccolta in un file. Essa va compilata come le classi. Ponendo FiguraPiana in
-poo.geometria si ha:
-package poo.geometria;
-public interface FiguraPiana{
-doublé perimetro();
-doublé area();
-}//FiguraPiana
-package poo.geometria;
-public class Triangolo implements FiguraPianaf
-public doublé perimetro(){...}
-public doublé area(){...}
-}//Triangolo
-etc. per Poligono e Cerchio
-Il discorso può proseguire ulteriormente come segue. Da Cerchio si può derivare Sfera che è una figura
-solida. A questo punto si potrebbe definire un'interfaccia FiguraSolida che extends FiguraPiana ed aggiunge
-metodi come doublé areaLaterale() e doublé volume() etc. Si suppone che il centro di una sfera appartenga al
-piano X-Y, che un cilindro sia appoggiato sul piano X-Y etc.
-
-
-Ovviamente in FiguraSolida si ritrova il perimetro che non ha senso in una figura a 3 dimensioni.
-Implementando FiguraSolida in Sfera si potrebbe codificare perimetro() in modo da generare un errore
-(eccezione). Il metodo area(), invece, si può intendere che calcoli l’area totale. Nel caso della sfera area
-laterale e area totale coincidono. In un Cilindro, altro possibile
-erede di Cerchio, le due aree sono distinte.
-
-
-
-laterale e area totale coincidono. In un Cilindro, altro possibile erede di Cerchio, le due aree sono distinte.
-L’interfaccia FiguraSolida:
-_________________________________ ___________
-public interface FiguraSolida extends FiguraPiana{
-doublé areaLaterale();
-doublé volume();
-}//FiguraSolida
-Seguono alcune classi concrete:
-public class Sfera extends Cerchio implements FiguraSolidaj
-public doublé perimetro(){ throw new UnsupportedOperationException();}
-public doublé area(){ return 4‘ Math.PI‘ raggio*raggio;}
-public doublé areaLaterale(){ return 4*Math.PI‘ raggio*raggio;}
-public doublé volume(){ return (4*Math.Prraggio‘ raggio*raggio)/3;}
-}//Sfera
-public class Cilindro extends Cerchio implements FiguraSolida{
-private doublé altezza;
-public doublé perimetro(){ throw new UnsupportedOperationException();}
-public doublé area(){ return areaLaterale()+2*raggio*raggio*Math.PI;}
-public doublé areaLaterale(){ return 2*Math.PI*raggio*altezza;}
-public doublé volume(){ return raggio*raggio*Math.PI*altezza;}
-}//Cilindro
-A questo punto si è visto una gerarchia di classi ancorata sulla classe astratta Figura e una collezione di classi
-di figure basate su interfacce e punti. Qual è l’approccio migliore ? Non c’è una risposta assoluta: tutto
-dipende dalle esigenze dell’applicazione. Se sono sufficienti le dimensioni, si può optare per la prima
-soluzione, se servono i punti-vertici si può passare all'altra organizzazione.
-Per usare queste costanti in una classe cliente, basta "implementare” l'interfaccia come segue:
-package poo.util;
-public class Client implements Costanti{//demo
-public static void main( Stringi] args ){
-System.ouf.printf(''PI=%1.5f%n",P/);
-System. ouf.printf("e=%1.5f%n", 5);
-System.0(v/.printf(’’SQRT(2)=%1,5f%n",SQRT 2);
-System.ouf.printf("SEC_PEFLDAY=%5d%n'',S5C_P5fl_D/4y);
-}//main
-}//Client
-Esercizi
-1. Programmare altre classi eredi di Figura come Quadrato, Rombo, Triangolo,Trapeziolsoscele, etc. La
-classe Triangolo potrebbe esportare un metodo per conoscere il tipo di triangolo etc.
-2. Programmare una classe Cono che estende Cerchio e implementa l’interfaccia FiguraSolida.
-3. Analizzare le dichiarazioni che seguono ed individuare e motivare ogni situazione di errore presente.
-interface T 1 { void foo();}
-interface T2{ int foo(int i);}
-interface T3{ int foo();}
-interface T4 extends T1, T3{]
-class A{
-public int foo() { return 0;}
-}// A
-class B extends A implements T1, T2{
-public void foo() { System.out.printlnCvoid foo()“; }
-public int foo(int i) { return 1;}
-}//B
-class C extends A implements T3{
-public int foo() { return 0;}
-}// C
-class D extends A implements T 1 {
-}// D
-Class E extends A implements T3,T4{
-}//E
-È possibile “riconciliare" le due gerarchie di classi di figure ? La risposta è si. È sufficiente che la classe
-astratta Figura implementi l’interfaccia FiguraPiana. Diventa cosi possibile introdurre ad es. un array di
-FiguraPiana in cui si possono collocare oggetti-figure dell’una o dell’altra gerarchia.
-
-** COMMENT Un'interfaccia come pacchetto di costanti
-Come caso particolare un’interfaccia potrebbe essere utilizzata per
-esporre alcune costanti di uso frequente.
-
-Vediamo un esempio.
-package poo.util;
-public interface Costanti (
-final doublé P/=3.14159; //pi greco
-final doublé 5=2.71828; //numero di Nepero
-final doublé SQPT_2= 1.41421; //radice quadrata di 2
-final int SEC_PEfì_DAY=86A00\ //secondi in un giorno
-}//Costanti
-
-
-Per usare queste costanti in una classe cliente, basta "implementare” l'interfaccia come segue:
-package poo.util;
-public class Client implements Costanti{//demo
-public static void main( Stringi] args ){
-System.ouf.printf(''PI=%1.5f%n",P/);
-System. ouf.printf("e=%1.5f%n", 5);
-System.0(v/.printf(’’SQRT(2)=%1,5f%n",SQRT 2);
-System.ouf.printf("SEC_PEFLDAY=%5d%n'',S5C_P5fl_D/4y);
-}//main
-}//Client
-Esercizi
-
 
 ** Esercizi
--  Analizzare le dichiarazioni che seguono ed individuare e motivare ogni situazione di errore presente.
-interface T 1 { void foo();}
-interface T2{ int foo(int i);}
-interface T3{ int foo();}
-interface T4 extends T1, T3{]
-class A{
-public int foo() { return 0;}
-}// A
-class B extends A implements T1, T2{
-public void foo() { System.out.printlnCvoid foo()“; }
-public int foo(int i) { return 1;}
-}//B
-class C extends A implements T3{
-public int foo() { return 0;}
-}// C
-class D extends A implements T 1 {
-}// D
-Class E extends A implements T3,T4{
-}//E
-
-** Esercizi
-
+- Implemetare la gerarchia della slide precedente introducendo anche
+  la =FiguraSolida=
 -  Programmare altre classi eredi di Figura come Quadrato, Rombo, Triangolo,Trapeziolsoscele, etc. La
 classe Triangolo potrebbe esportare un metodo per conoscere il tipo di triangolo etc.
 -  Programmare una classe Cono che estende Cerchio e implementa l’interfaccia FiguraSolida.
+
+* Tipi di dati astratti
+
+** Tipi di dati astratti
+- Spesso le applicazioni utilizzano dati strutturati (aggregati) che
+ si caratterizzano per le operazioni che si debbono eseguire sui dati
+ e non per il modo in cui questi aggregati sono rappresentati in
+ memoria.
+- Tutto ciò introduce il concetto di tipo di dati astratto (ADT o
+  abstract data type) che in Java è esprimibile in modo naturale con una interfaccia o una classe astratta
+  - si tratta di un pacchetto di metodi (contratto) specificati unicamente mediante le loro intestazioni.
+  - un ADT è poi concretizzabile (implementabile) in diversi modi,
+
+
+** Esempio
+- Si vuole realizzare una nozione di array (vector) “più comoda” per
+  le applicazioni, rispetto all'array nativo di Java.
+  - gli array nativi sono strutture dati compatte e statiche e tendono
+    ad introdurre problemi quando si vuole aggiungere un elemento e l'array è pieno, o quando si vuole eliminare un elemento senza creare buchi
+- Un vector è pensato scalare automaticamente di dimensione ogni volta
+  che serve, e farsi carico trasparentemente delle eventuali
+  operazioni di spostamento di elementi a seguito di inserimenti o rimozioni.
+- In quanto segue si definisce un ADT Vector mediante un’interfaccia
+  - gli  sono assunti =Object= per generalità.
+  - successivamente, l'utilizzo del meccanismo dei generici di Java consentirà di migliorare in flessibilità e sicurezza la definizione ed uso dei vector.
+
+** ADT Vector
+#+begin_src  java
+L’ADT Vector:
+package poo.util;
+public interface Vector{
+public int size();
+public int indexOf( Object elem );
+public boolean contains( Object elem );
+public Object get( int indice );
+public Object set( int indice, Object elem );
+public void add( Object elem );
+public void add( int indice, Object elem );
+public void remove( Object elem );
+public Object remove( int indice );
+public void clear();
+public boolean isEmpty();
+public Vector subVectorj int da, int a );
+}
+  
+#+end_src
+
+** Semantica Operazioni
+  :PROPERTIES:
+  :BEAMER_env: frame
+  :BEAMER_opt: allowframebreaks,label=
+  :END:
+
+- int sizeQ
+  - ritorna il numero di elementi presenti nel vettore. Gli elementi
+    del vettore, similmente agli array, hanno indici  0 e size()-1
+
+- int indexOf( Object elem )
+  - ritorna l'indice della prima occorrenza di elem nel vettore, o -1
+    se elem non è presente. Si basa sul metodo equals degli elementi.
+
+- boolean containsf Object elem )
+  - ritorna true se elem è presente almeno uno volta nel vettore,
+    false altrimenti. Si basa sul metodo equals degli elementi.
+
+- Object get( int indice )
+  - ritorna l’elemento alla posizione indice del vettore. Sostituisce
+    la notazione vindice] degli array nativi. Solleva un'eccezione IndexOutOfBoundsException se indice non è compreso tra 0 e size()-1
+
+- Object set( int indice, Object elem )
+  - suppone il valore di indice compreso tra 0 e size()-1. Sostituisce
+    l'elemento alla posizione indice con elem, e ritorna il precedente
+    elemento. Solleva un'eccezione IndexOutOfBoundsException se
+    l'indice non è valido
+
+- void add( Object elem )
+  - aggiunge elem come ultimo elemento del vector, espandendo la struttura se necessario.
+
+- void add( int indice, Object elem )
+  - aggiunge elem alla posizione indice, spostando preliminarmente di
+   un posto a destra tutti gli elementi da indice in poi. Espande la
+   struttura se necessario. Solleva una eccezione
+   IndexOutOfBoundsException se indice non è compreso tra 0 e sizeQ
+
+- void removef Object elem )
+  - elimina, se esiste, la prima occorrenza di elem dal vector
+
+- Object removej int indice )
+  - elimina l'elemento alla posizione indice, e lo ritorna. Solleva
+    un'eccezione IndexOutOfBoundsException se indice non è compreso tra 0 e size()-1
+
+- void clearQ
+  - svuota il vector. Dopo l'operazione size() vale 0
+
+- boolean isEmptyQ
+  - ritorna true se size()==0
+
+- Vector subVectorj int da, int a )
+  - crea un nuovo vector e vi copia gli elementi dalla posizione da
+    alla posizione a (esclusa) di this. Sollevaun'eccezione se gli
+    indici non sono validi: da deve essere in [0,size()-1], a in [O.sizeQ]
+
+** Esercizio
+- Fornire una implementazione di =Vector= basata su array che rispetti
+  le seguenti specifiche:
+  + Deve essere presente un attributo =size=, il cui  valore  indica il primo slot libero (se esiste) dell'array
+    + il metodo =add(elem)= deve inserire nella posizione puntata da size
+  + Le espansioni/contrazioni dell'array sono curate rispettivamente
+    da metodi ausiliari privati (e.g., =espandi=, =contrai=)
+    + si espande quando il valore di =size= eguaglia quello della
+      lunghezza dell'array
+    + si contrae quando il valore di =size= scende oltre metà della
+      lunghezza dell'array
+  + L'aggiunta (resp. rimozione) di un elemento intermedio comporta lo
+    scorrimento a destra (resp. sinistra) del contenuto dell'array
+  + La remove la vecchia ultima posizione dell'array viene posta a
+    =null= (per favorire il garbage collector)
+  + Il metodo =hashCode= utilizza una tecnica canonica: 
+    + si combinano gli hash code degli elementi componenti utilizzando
+      un fattore di /shuffling/
+
+** Discussione
+- Poiché gli elementi di un vector sono Object, tutti i tipi di
+  oggetti, istanze cioè di una qualsiasi classe, posson essere memorizzati
+- =Vector= è una struttura dati potenzialmente eterogenea
+  - possono essere inseriti oggetti =String= unitamente ad oggetti razionali, oggetti punti etc
+  - Lavorare con un tale tipo di struttura non pone problemi sino a
+   che si richiedono operazioni comuni a tutte le classi: =toString=, =equals()=
+- Per applicare metodi specifici di un particolare tipo di oggetto,
+  occorre identificare il suo tipo dinamico (con =instanceof=) e quindi (mediante casting) applicare il punto di vista della relativa classe
+- Tuttavia, è da notare come nella maggior parte dei casi la classe
+  =Vector= verrà  utilizzata per memorizzare oggetti appartenenti alla
+  stessa classe, i.e., omogenei
+
+** Un Vector generico e parametrico
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:END:
+**** left                                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+- A partire dalla versione 5 Java, ha introdotto il meccanismo dei
+  generici
+- I generici offrono la possibilità di programmare una
+  classe/interfaccia (o anche singoli metodi) in veste generica un uno
+  o più tipi (parametri tipi formali)
+  - ADT Vector diventa più flessibile e sicuro se viene riprogettato
+    in veste generica con un tipo parametrico =T=
+\vskip .2cm
+- La notazione =Vector<T>= significa che la struttura dati è composta
+  di elementi tutti di uno stesso tipo *generico* =T=
+  - =T= può essere sostituito con una qualsiasi classe Java
+**** right                                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+\small
+#+begin_src java
+public interface Vector<T> {
+...
+}
+  
+#+end_src
+\vskip 0.2
+#+begin_src  java
+    Vector<Integer> v = 
+        new ArrayVector<Integer>();
+    Vector<String> w = 
+        new ArrayVector<String>();
+#+end_src
+
+** Discussione
+- Con una tale organizzazione si ottenono diversi benefici:
+  - il compilatore garantisce che in v non si possano inserire
+    elementi che non siano oggetti =Integer= (omogeneità)
+- la parametricità garantisce che quando si preleva da =w= l'oggetto
+  sarà sicuramente una =String=, quindi non serve più il casting da =Object=
+
+** Classi wrapper dei tipi primitivi
+- Poiché il tipo parametro formale =T= di una classe generica come
+  =ArrayVector<T>= denota una qualsiasi classe Java
+  - va da sé che il meccanismo dei generici non permette di utilizzare
+    direttamente i tipi primitivi (che non sono classi).
+  - non si può scrivere =ArrayVector<int>= ma solo =ArrayVector<lnteger>=
+  - Per generalità il linguaggio introduce alcune classi predefinite
+    che sono associate ai tipi primitivi (classi wrapper):
+    - int ->  Integer, a byte->Byte, short ->Short, a long >Long, a
+     floatloat, a double->Double, a char->Character, a boolean->Boolean.
+    - Le classi numeriche (e.g., Integer,Double etc.) sono eredi della classe astratta Number.
+  - Per ovvie ragioni, un oggetto di una classe wrapper è immutabile
+    perché rappresenta una costante di un tipo primitivo sebbene sotto forma di oggetto
+  - Le classi wrapper offrono metodi e attributi di utilità generale.
+    - tute  sono di tipo =Comparable= e sono provviste di: =toString()=, =equals()=, ...
+  - Per semplificare la vita al programmatore Java si occupa delle
+    opearzioni di boxing/unboxing
+    - Le seguenti istruzioni sono pertanto lecite:
+#+begin_src  java
+Vector<Integer> v = new ArrayVector<Integer>();
+v.add(5); //boxing 
+int x=v.get(0); //unboxing
+#+end_src
+
+** Vector<T> generico e parametrico
+- La programmazione di una classe con tipi parametrici è vincolata da
+  alcune semplici regole:
+  - per il nome del tipo parametro formale utilizzare semplici lettere
+    (e.g., T, E, K )
+  - il parametro formale rappresenta qualsiasi classe senza
+    informazioni specifiche
+- Non è possibile istanziare un oggetto di tipo T tramite
+  l'operatore new
+  - nemmeno la creazione di un array di tipo T è consentita,
+    - sebbene la difficoltà può essere aggirata creando un array di  Object e poi castizzando tale array al tipo (T[])
+- Oggetti di tipo T possono essere ricevuti/restituiti
+- Su oggetti di tipo T è possibile richiamare i metodi standard degli
+  oggetti Java (i.e., quelli ereditati da Object)
+
+
+
+** Ridefinizione della classe Vector
+#+begin_src  java
+    public interface Vector<T>{
+        public int size();
+        public int indexOf( T elem );
+        public boolean contains( T elem );
+        public T get( int indice );
+        public T set( int indice, T elem );
+        public void add( T elem );
+        public void add( int indice, T elem );
+        public void remove( T elem );
+        public T remove( int indice );
+        public void clear();
+       public boolean isEmpty();
+       public Vector<T> subVector( int da, int a );
+  }//Ve ctor
+
+
+#+end_src
+
+** Esercizio
+- Implementare l'interfaccia =Vector<T>=K
+
+** Discussione
+-  La nuova implementazione rinuncia ai metodi di ausilio =espandi()=
+  e =contrai()= in quanto ottiene  l'equivalente funzionalità mediante
+  il metodo =java.util.Arrays.copyOf( array_source, dim )= che crea e
+  ritorna un array dello stesso tipo di array_source, di capacità dim
+  (maggiore/minore di array„source.length), e copia gli elementi di array_source nel nuovo array nel quale le posizioni vacanti sono poste a null
+
+* Collection framework 
