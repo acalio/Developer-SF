@@ -1,6 +1,6 @@
 package sortable;
 
-class Intero extends Sortable {
+class Intero implements Comparable {
 
 	private int valore;
 
@@ -16,8 +16,8 @@ class Intero extends Sortable {
 		this.valore = valore;
 	}
 
-	@Override
-	protected int compareTo(Sortable other) {
+
+	public int compareTo(Object other) {
 		Intero tmp = (Intero) other;
 		return valore-tmp.valore;
 	}

@@ -1,5 +1,7 @@
 package sortable;
 
+import java.util.Arrays;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -32,7 +34,7 @@ public class AppTest  extends TestCase
      */
     public void testIntero()
     {
-		Sortable[] v = new Sortable[] {
+		Comparable[] v = new Comparable[] {
 			new Intero(5),
 			new Intero(10),
 			new Intero(0),
@@ -40,9 +42,10 @@ public class AppTest  extends TestCase
 			new Intero(12)
 		};
 
-		Sortable.sort(v); //eseguo ordinamento
+		Arrays.sort(v);
 
-		Sortable[] expected = new Sortable[] {
+		// Sortable.sort(v); //eseguo ordinamento
+		Comparable[] expected = new Comparable[] {
 			new Intero(0),
 			new Intero(5),
 			new Intero(10),

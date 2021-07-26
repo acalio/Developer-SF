@@ -77,7 +77,10 @@ class BancaArray {
 				clients = Utility.raddoppia(clients);// riallocare array
 			}
 			clients[pos] = c;
-		} 
+		} else {
+			//assegno il codice gia
+			c.setCode(this.clients[posCliente].getCode());
+		}
 
 		// Creo il conto bancario
 		ContoBancario cb = null;

@@ -48,7 +48,7 @@ class Cliente {
 	}
 
 	public void setCode(String code) {
-		if (this.code != null)
+		if (this.code != null && !this.code.equals(code))
 		    //il codice cliente è gia stato settato
 		    throw new RuntimeException("Non puoi cambiare codice ad un correntista"); // Prog. Termina!
 		this.code = code;

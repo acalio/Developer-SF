@@ -1,6 +1,6 @@
 package sortable;
 
-class Persona extends Sortable {
+class Persona implements Comparable {
 
 	private int eta;
 	private String nome;
@@ -31,12 +31,7 @@ class Persona extends Sortable {
 		return "Persona [eta=" + eta + " nome="+nome+"]";
 	}
 
-	/**
-	 * Compare sulla base della eta della persona
-	 *
-	 */
-	@Override
-	protected int compareTo(Sortable other) {
+	public int compareTo(Object other) {
 		Persona tmp = (Persona) other;
 		return eta-tmp.eta;
 	}
