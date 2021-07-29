@@ -1375,4 +1375,337 @@ int x=v.get(0); //unboxing
   ritorna un array dello stesso tipo di array_source, di capacità dim
   (maggiore/minore di array„source.length), e copia gli elementi di array_source nel nuovo array nel quale le posizioni vacanti sono poste a null
 
+
+** COMMENT Caso di studio: Implementazione di una agendina
+Un'agendina è un altro esempio di tabella, ossia un elenco di nominativi. I nominativi si suppongono mantenuti
+in ordine alfabetico (prima per cognome e a parità di cognome per nome). Per semplicità si ignorano le
+omonimie: si suppone che non esistano due nominativi con lo stesso nome e cognome e telefono diversi.
+Come si vede, l’interfaccia Comparable che presiede alla definizione del confronto naturale degli oggetti, essa
+stessa è generica. Pertanto, ad una «classe è data la possibilità di introdurre il confronto utilizzando
+Comparable non di Object ma del tipo specifico della classe. Si guadagna in sicurezza e semplicità. Esempio: Si vuole scrivere un intero programma che consenta di:
+public class Data implements Comparable<Data>{
+public int compareTo( Data d ){//si evita una operazione di casting
+if( this.equals(d) ) return 0;
+if( this.A<d.A II this.A==d.A && this.M<d.M II this.A==d.A && this.M==d.M && this.G<d.G )
+return -1;
+return +1;
+}//compareTo
+}//Data
+Tabelle e loro rappresentazione
+Una tabella è una collezione di informazioni strutturate. Un esempio classico è il registro anagrafe di un
+comune. Per ogni persona, il registro memorizza: cognome, nome, data di nascita, sesso, stato civile etc.
+Una tabella è logicamente rappresentabile come una griglia righe-colonne. Una versione ridotta del registro
+anagrafe è la seguente:
+Cognome
+persona
+Nome
+DataNascita Sesso StatoCivile
+Bianchi Fabio 10/11
+/1945 M Sposato
+Rossi Mario 12/03
+/1985 M Celibe
+Le colonne sono associate alle varie informazioni componenti. Le righe individuano le entità, in questo caso
+persone. Prendendo un'intera colonna si possono osservare, ad es., tutti i possibili cognomi esistenti nella
+tabella. Prendendo un'intera riga s'identifica una registrazione (da cui il termine registro) e quindi
+semanticamente una persona. i S
+Si dice chiave di una tabella un sottinsieme delle colonne i cui valori identificano univocamente un'entità. Ad
+esempio, nel registro anagrafe di un piccolo comune, una persona potrebbe essere univocamente determinata
+dal cognome, nome e data di nascita
+150
+•
+•
+•
+•
+•
+Inserire un nuovo nominativo nella tabella
+Eliminare un nominativo dalla tabella
+Cercare il numero di telefono (prefisso+telefono) di una persona
+Cercare il nominativo di un assegnato numero di telefono
+Salvare/ripristinare l'agendina su/da file
+Per raggiungere l'obiettivo si appronta prima una classe, es.Nominativo, che descrive un generico nominativo
+ossia una riga della tabella. La classe Nominativo, inserita nel package poo.agendina, genera oggetti
+immutabili.
+
 * Collection framework 
+
+** Introduzione
+
+- Nel package java.util sono presenti alcune interfacce e classi
+  “pronte per l'uso” (framework) che consentono di lavorare su
+  collezioni generiche di elementi
+
+
+- Le due figure che seguono riassumono una parte del collection framework
+  - Le collezioni di tipo lista o set originano dall'interfaccia Collection
+    - estesa dalle interfacce specifiche List e Set
+  - Le mappe derivano dall’interfaccia base Map. Le
+    - si osserva che le mappe o funzioni sono gestite attraverso una gerarchia di classi separata da quelle delle liste e set.
+- Le classi concrete con bordo nero sono normali classi (stanziabili)
+- Le classi concrete con bordo sottile sono classi di utilità e
+  contengono metodi statici (e.g., Collections e Arrays)
+
+** Framework
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/collframework.png}
+\end{figure}
+#+end_export
+
+** Discussione
+- Una collezione denota genericamente una successione o insieme di elementi
+  - le classi collezioni sono parametriche nel tipo T degli elementi
+- Una lista è una collezione nella quale:
+  + è definito un ordine totale
+  + gli elementi di una lista possono essere rintracciati in base al loro indice
+  + possono sussistere duplicati di elementi
+- Un set è una collezione basata sul significato di insieme matematico, cioè:
+  + non ha importanza l’ordine
+  +  non sussistono duplicati
+- Per fare uso delle collezioni è importante conoscere le interfacce
+  Collection, List, Set, Iterator, Listlterator,Map etc
+
+** L' interfaccia (parziale) Collection<T>
+
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+
+**** Left                                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+- I metodi add(), addAII(), remove(), removeAII() ritornano un boolean
+  che vale true se la collezione risulta modificata a seguito
+  dell'operazione
+- retainAll() toglie tutti gli elementi ad eccezioni di quelli passati
+  in input
+
+**** Right                                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+\scriptsize
+#+begin_src java
+public interface Collection<T> {
+boolean add(T);
+boolean addAll(Collection<T> c);
+void clear();
+boolean isEmpty();
+boolean contains(T elemento);
+boolean containsAll(Collection<T> c);
+boolean retainAll(Collection<T> c);
+int size();
+Oject[] toArray();
+}
+#+end_src
+
+** Esempio
+#+begin_src  java
+List<lnteger> li=new ArrayList<lnteger>();
+li.add( 4 ); li.add(2); li.add(2); li.add(-1); li.add(10);
+System.out.println( li );
+
+Set<Integer> si=new HashSet<Integer>();
+si.add( 4 ); si.add(2); si.add(2); si.add(-1); si.add(10);
+System.out.println( si );
+#+end_src
+
+** Interfaccia Iterator<T>
+#+begin_src  java
+boolean hasNext();
+T next();
+void remove();
+#+end_src
+
+- Utile per “navigare" sulla collection elemento per elemento
+  - next() restituisce il prossimo elemento e porta avanti l'iteratore
+  -  hasNext() ritorna false, solleva un'eccezione
+    NoSuchElementException (erede di RuntimeException).
+
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/iterator.png}
+\end{figure}
+#+end_export
+
+
+** Schema d' uso di iterator
+#+begin_src  java
+  Iterator<T> it=collezione.iterator(); //ottiene un iteratore da collezione
+  while( it.hasNext() ){
+      T x=it.next();
+      //elabora x
+  }
+
+#+end_src
+
+** Pattern tipico della remove
+#+begin_src  java
+  Iterator<T> it=collezione.iterator();
+  while( it.hasNext() ){
+  T x=it.next();
+  if( x è da rimuovere )
+      it.remove();
+  }
+
+#+end_src
+- Il metodo remove() consente di rimuovere l’elemento corrente della collezione, rilasciato dall'ultima =next()=
+
+- Un’invocazione it.remove() non preceduta da una chiamata it.next() solleva un’eccezione di tipo UlegalStateException (erede di RuntimeException).
+  - L’eccezione è generata anche a seguito di due chiamate consecutive
+    di remove()
+    - non inframmezzate cioè da una  di next()
+
+** Metodi aggiunti dall'interfaccia List<T> che estende Collection<T>
+
+#+begin_src  java
+void add( int indice, T elemento );
+void addAll( int indice, Collection<T> c );
+T get( int indice );
+int indexOf( T elemento );
+int lastIndexOf( T elemento );
+ListIterator<T> ListIterator();
+ListIterator<T> ListIterator( int da );
+T remove( int indice );
+T set( int indice, T elemento );
+List<T> subList( int da, int a );
+#+end_src
+
+- Questi metodi si basano sull’indicizzazione degli elementi
+  supportata da  =List=.
+- Il metodo add( x ) definito in Collection, aggiunge l’oggetto x alla fine (coda) della lista
+- add(0, x) aggiunge in testa
+- Il  metodo add( indice,x ) aggiunge x nella posizione indice
+  - L'operazione comporta  lo shift di un posto a destra
+- Il metodo remove( indice ) rimuove e ritorna l’oggetto in posizione indice 
+
+** Metodi dell'interfaccia ListIterator<T> che estende Iterator<T>
+#+begin_src java
+  //in aggiunta a quelli di Iterator
+  boolean hasPrevious();
+  T previous();
+  int previousIndex();
+  int nextIndex();
+  void set(T e);
+  add(T e);
+#+end_src
+- il metodo add di ListITerator aggiunge un elemento giusto prima del cursore
+- next() non è influenzato dall'inserimento
+- previous() ritorna l'elemento appena aggiunto
+
+  #+begin_export  latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/add.png}
+\end{figure}
+  #+end_export
+
+** Discussione
+- Il metodo set( x ) sostituisce x all'elemento corrente (definito   dall’ultima operazione next() o previous() eseguita).
+- I metodi hasPrevious() e previous() sono duali di hasNext() e
+  next(), e consentono di attraversare una lista a ritroso
+#+begin_src  java
+  Listlterator<T> lit=lista.listlterator( lista.size() );//cursore dopo l’ultimo elemento
+  while( lit.hasPrevious() ){
+      T x=lit.previous();
+  elabora x;
+}
+
+#+end_src
+- Un ListIterator può essere inizializzato alla fine della lista
+- Se il cursore si trova alla fine della lista, l'elemento viene
+  aggiunto alla fine della lista
+- Se il cursore è nella prima posizione, l'elemento viene aggiunto
+  all'inizio della lista
+- Se il cursore si trova nel mezzo della lista, l'elemento viene
+  aggiunto prima del cursore
+  - pertanto il cursore rimane in alterato
+
+** Classi ArrayList<T> e LinkedList<T>
+- Sono classi concrete che appoggiano la lista rispettavamente su un
+  array nativo (che può espandersi e contrarsi) e su una lista concatenata
+  - ArrayList è identico all'ArrayVector visto in precedenza
+- Prima di decidere quale delle due classi adottare occorre riflettere
+  su quale sia la più conveniente
+
+  
+** Lista concatenata
+- Gli elementi adiacenti non sono contigui come nell'array, ma
+  esplicitamente concatenati mediante riferimenti
+
+#+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/linklist.png}
+\end{figure}
+#+end_export
+
+** List concatenata (II)
+
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+
+**** Left                                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+- Aggiungendo l'elemento 6 tra il 2 e il 9
+  #+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/linklist1.png}
+\end{figure}
+  #+end_export
+**** Right                                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+- Rimuovendo l'elemento 9
+  #+begin_export latex
+\begin{figure}
+\includegraphics[scale=0.26]{\figures/linklist2.png}
+\end{figure}
+  #+end_export
+** Metodi propri di ArrayList e LinkedList
+*** Columns                                                     :B_columns:
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: t
+:END:
+
+**** ArrayList                                             :B_block:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:BEAMER_env: block
+:END:
+- removeRange(int da, int a)
+  - rimuovi tutti gli elementi che vanno dalla posizione da ad a
+- trimToSize()
+  - Fissa la capacità alla dimensione attuale della lista
+
+**** LinkedList                                            :B_block:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:BEAMER_env: block
+:END:
+- addFirst(T e)
+- addLast(T e)
+- T getFirst()
+- T getLast()
+- T removeFirst()
+- T removeLast()
+
+\vskip 0.2cm
+
+
+
+
+** Discussione
+- Da notare che operazioni come getFirst() e getLast() di LinkedList
+  sono ottenibili   anche tramite la funzione get definita
+  nell'interfaccia List (resp. get(0), get(size()-1)).
+- Utilizzare gli indici su una LinkedList (e.g., get(i)) è
+  un'operazione inefficiente
+- Eseguire l'add su un ArrayList è un'operazione inefficiente
